@@ -41,13 +41,13 @@ export const updateConfig = async (req, res, next) => {
   try {
     const { value, type, group, label, description } = req.body
 
-    const config = await SiteConfig.setConfig(req.params.key, value, {
-      type: type || 'string',
-      group: group || 'general',
-      label: label || req.params.key,
-      description: description || '',
-      updatedBy: req.user._id,
-    })
+    const options = { updatedBy: req.user._id }
+    if (type) options.type = type
+    if (group) options.group = group
+    if (label) options.label = label
+    if (description) options.description = description
+
+    const config = await SiteConfig.setConfig(req.params.key, value, options)
 
     res.json({ success: true, config })
   } catch (error) {
@@ -69,14 +69,15 @@ export const bulkUpdateConfig = async (req, res, next) => {
     }
 
     const results = await Promise.all(
-      configs.map(c =>
-        SiteConfig.setConfig(c.key, c.value, {
-          type: c.type || 'string',
-          group: c.group || 'general',
-          label: c.label || c.key,
-          updatedBy: req.user._id,
-        })
-      )
+      configs.map(c => {
+        const options = { updatedBy: req.user._id }
+        if (c.type) options.type = c.type
+        if (c.group) options.group = c.group
+        if (c.label) options.label = c.label
+        if (c.description) options.description = c.description
+        
+        return SiteConfig.setConfig(c.key, c.value, options)
+      })
     )
 
     res.json({ success: true, count: results.length, message: 'Configs updated' })

@@ -32,6 +32,17 @@ export default function ElectricianEarnings() {
       setEarnings(response.earnings)
     } catch (err) {
       console.error('Failed to load earnings:', err)
+      // Fallback so the page renders instead of spinning forever
+      setEarnings({
+        total: 0,
+        thisMonth: 0,
+        lastMonth: 0,
+        thisWeek: 0,
+        pending: 0,
+        avgPerJob: 0,
+        monthlyBreakdown: [],
+        recentTransactions: [],
+      })
     } finally {
       setLoading(false)
     }

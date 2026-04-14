@@ -38,20 +38,27 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization'],
 }))
 
-// Rate limiting
+// Rate limiting — skip for admin routes (already protected by JWT + role middleware)
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: 500, // limit each IP to 500 requests per windowMs
   message: { success: false, message: 'Too many requests, please try again later.' },
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => {
+    // Admin/superadmin/config routes are already protected by auth + role middleware
+    const path = req.path
+    return path.startsWith('/admin') ||
+           path.startsWith('/superadmin') ||
+           path.startsWith('/config')
+  },
 })
 app.use('/api', limiter)
 
-// Stricter rate limit for auth endpoints
+// Stricter rate limit for auth endpoints (public-facing login/OTP)
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 20,
+  max: 50,
   message: { success: false, message: 'Too many auth attempts, please try again later.' },
 })
 app.use('/api/auth', authLimiter)

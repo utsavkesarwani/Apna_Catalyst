@@ -306,9 +306,10 @@ export const rejectBooking = async (req, res, next) => {
   try {
     const { reason } = req.body
     const booking = await Booking.findById(req.params.id)
+      .populate('electrician', 'name location categories services')
     if (!booking) throw ApiError.notFound('Booking not found')
 
-    if (booking.electrician.toString() !== req.user._id.toString()) {
+    if (booking.electrician._id.toString() !== req.user._id.toString()) {
       throw ApiError.forbidden('Not authorized')
     }
 
@@ -316,15 +317,134 @@ export const rejectBooking = async (req, res, next) => {
       throw ApiError.badRequest('Booking is not in pending status')
     }
 
-    booking.status = 'cancelled'
+    booking.status = 'rejected'
     booking.cancellation = {
       reason: reason || 'Rejected by electrician',
       cancelledBy: 'electrician',
       cancelledAt: new Date(),
     }
+
+    // Refund if already paid
+    if (booking.payment.status === 'paid') {
+      booking.payment.status = 'refunded'
+    }
+
     await booking.save()
 
-    res.json({ success: true, booking })
+    // Find alternative electricians in the same city with overlapping services
+    const rejectedElec = booking.electrician
+    let alternatives = []
+    try {
+      alternatives = await Electrician.find({
+        _id: { $ne: rejectedElec._id },
+        isApproved: true,
+        isSuspended: false,
+        'availability.isAvailable': true,
+        $or: [
+          { 'location.city': { $regex: new RegExp(rejectedElec.location?.city || '', 'i') } },
+          { categories: { $in: rejectedElec.categories || [] } },
+        ],
+      })
+        .select('name profilePhoto rating experience location categories availability priceRange')
+        .sort({ 'rating.avg': -1 })
+        .limit(6)
+    } catch {
+      // Non-critical — just return empty alternatives
+    }
+
+    // Broadcast rejection to user via Socket.IO
+    try {
+      const io = getIO()
+      io.emit(`booking:rejected:${booking.user}`, {
+        bookingId: booking._id,
+        reason: booking.cancellation.reason,
+        alternatives: alternatives.map(e => ({
+          id: e._id,
+          name: e.name,
+          photo: e.profilePhoto,
+          rating: e.rating?.avg || 0,
+          experience: e.experience,
+          city: e.location?.city,
+          categories: e.categories,
+        })),
+      })
+    } catch {
+      // Socket.IO may not be initialized
+    }
+
+    res.json({
+      success: true,
+      message: 'Booking rejected',
+      booking,
+      alternatives: alternatives.map(e => ({
+        id: e._id,
+        name: e.name,
+        profilePhoto: e.profilePhoto,
+        rating: e.rating,
+        experience: e.experience,
+        location: e.location,
+        categories: e.categories,
+        availability: e.availability,
+        priceRange: e.priceRange,
+      })),
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
+ * @desc    Get alternative electricians for a rejected/cancelled booking
+ * @route   GET /api/bookings/:id/alternatives
+ * @access  Private (user)
+ */
+export const getBookingAlternatives = async (req, res, next) => {
+  try {
+    const booking = await Booking.findById(req.params.id)
+      .populate('electrician', 'location categories services')
+
+    if (!booking) throw ApiError.notFound('Booking not found')
+
+    if (booking.user.toString() !== req.user._id.toString()) {
+      throw ApiError.forbidden('Not authorized')
+    }
+
+    const rejectedElec = booking.electrician
+    const alternatives = await Electrician.find({
+      _id: { $ne: rejectedElec._id },
+      isApproved: true,
+      isSuspended: false,
+      'availability.isAvailable': true,
+      $or: [
+        { 'location.city': { $regex: new RegExp(rejectedElec.location?.city || '', 'i') } },
+        { categories: { $in: rejectedElec.categories || [] } },
+      ],
+    })
+      .select('name profilePhoto rating experience location categories availability priceRange')
+      .sort({ 'rating.avg': -1 })
+      .limit(10)
+
+    res.json({
+      success: true,
+      booking: {
+        _id: booking._id,
+        service: booking.service,
+        scheduledAt: booking.scheduledAt,
+        timeSlot: booking.timeSlot,
+        status: booking.status,
+      },
+      alternatives: alternatives.map(e => ({
+        id: e._id,
+        name: e.name,
+        profilePhoto: e.profilePhoto,
+        rating: e.rating,
+        experience: e.experience,
+        location: e.location,
+        categories: e.categories,
+        availability: e.availability,
+        priceRange: e.priceRange,
+      })),
+    })
   } catch (error) {
     next(error)
   }
@@ -345,7 +465,7 @@ export const cancelBooking = async (req, res, next) => {
       throw ApiError.forbidden('Not authorized')
     }
 
-    if (['completed', 'cancelled'].includes(booking.status)) {
+    if (['completed', 'cancelled', 'rejected'].includes(booking.status)) {
       throw ApiError.badRequest('Cannot cancel a completed or already cancelled booking')
     }
 

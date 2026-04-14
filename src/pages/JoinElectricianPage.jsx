@@ -40,7 +40,7 @@ function UploadZone({ id, label, hint, accept, multiple = false, files, onChange
       const isImage = f.type.startsWith('image/')
       const isVideo = f.type.startsWith('video/')
       const isAccepted = accept === 'image/*' ? isImage : (isImage || isVideo)
-      return isAccepted && f.size <= 10 * 1024 * 1024 // 10 MB limit
+      return isAccepted
     })
     if (!valid.length) return
     onChange(multiple ? [...files, ...valid].slice(0, maxFiles) : [valid[0]])
@@ -286,8 +286,10 @@ export default function JoinElectricianPage() {
       if (err?.status === 409 || err?.response?.status === 409) {
         setError(err.message || 'An electrician with this email or mobile already exists')
       } else {
-        // Network error / no backend — still show success for demo
-        setSubmitted(true)
+        const errorDetails = err?.errors && err.errors.length > 0 
+          ? ` - ${err.errors.join(', ')}` 
+          : ''
+        setError(`${err.message || 'Registration failed'}${errorDetails}`)
       }
     } finally {
       setLoading(false)

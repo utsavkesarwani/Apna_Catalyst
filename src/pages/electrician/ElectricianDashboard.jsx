@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import {
-  CalendarCheck, Clock, IndianRupee, Star, TrendingUp,
+  CalendarCheck, Clock, IndianRupee, Star,
   ArrowUpRight, ArrowDownRight, CheckCircle2,
-  MapPin, Phone, ChevronRight, AlertCircle, Eye, Loader2
+  MapPin, Phone, ChevronRight, AlertCircle, Eye, Loader2, Bell, Zap, XCircle
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { getElectricianBookings, getEarnings, acceptBooking, rejectBooking } from '../../api/electrician.api.js'
@@ -32,28 +32,64 @@ export default function ElectricianDashboard() {
   const [earnings, setEarnings] = useState(null)
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(null)
+  const [showBanner, setShowBanner] = useState(true)
+  const prevPendingCount = useRef(0)
 
-  useEffect(() => {
-    loadDashboardData()
-  }, [])
-
-  const loadDashboardData = async () => {
-    setLoading(true)
+  const loadDashboardData = useCallback(async (silent = false) => {
+    if (!silent) setLoading(true)
     try {
       const [activeRes, pendingRes, earningsRes] = await Promise.all([
         getElectricianBookings({ status: 'confirmed' }),
         getElectricianBookings({ status: 'pending' }),
         getEarnings(),
       ])
+      const newPending = pendingRes.bookings || []
+
+      // If new requests came in while we were away, reset banner visibility
+      if (newPending.length > prevPendingCount.current) {
+        setShowBanner(true)
+        // Play subtle audio cue for new request
+        try {
+          const ctx = new (window.AudioContext || window.webkitAudioContext)()
+          const osc = ctx.createOscillator()
+          const gain = ctx.createGain()
+          osc.type = 'sine'
+          osc.frequency.setValueAtTime(880, ctx.currentTime)
+          osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.3)
+          gain.gain.setValueAtTime(0.15, ctx.currentTime)
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4)
+          osc.connect(gain)
+          gain.connect(ctx.destination)
+          osc.start(ctx.currentTime)
+          osc.stop(ctx.currentTime + 0.4)
+          setTimeout(() => ctx.close(), 600)
+        } catch { /* audio not available */ }
+      }
+      prevPendingCount.current = newPending.length
+
       setActiveBookings(activeRes.bookings || [])
-      setPendingBookings(pendingRes.bookings || [])
+      setPendingBookings(newPending)
       setEarnings(earningsRes.earnings || null)
     } catch (err) {
       console.error('Failed to load dashboard data:', err)
+      if (!silent) {
+        setActiveBookings([])
+        setPendingBookings([])
+        setEarnings(null)
+      }
     } finally {
-      setLoading(false)
+      if (!silent) setLoading(false)
     }
-  }
+  }, [])
+
+  // Initial load
+  useEffect(() => { loadDashboardData() }, [loadDashboardData])
+
+  // Poll every 15s for new booking requests
+  useEffect(() => {
+    const interval = setInterval(() => loadDashboardData(true), 15000)
+    return () => clearInterval(interval)
+  }, [loadDashboardData])
 
   const handleAccept = async (id) => {
     setActionLoading(id)
@@ -142,6 +178,54 @@ export default function ElectricianDashboard() {
 
   return (
     <motion.div variants={container} initial="hidden" animate="show" className="space-y-6">
+      {/* ── Pending Booking Alert Banner ── */}
+      <AnimatePresence>
+        {pendingBookings.length > 0 && showBanner && (
+          <motion.div
+            key="pending-banner"
+            initial={{ opacity: 0, y: -16, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -16, scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            className="relative overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent p-4 flex items-center gap-4"
+          >
+            {/* Glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-transparent pointer-events-none" />
+            <div className="w-11 h-11 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center flex-shrink-0 relative">
+              <Bell size={20} className="text-amber-400" />
+              <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-amber-500 text-[10px] font-bold text-white flex items-center justify-center animate-bounce">
+                {pendingBookings.length}
+              </span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-display font-semibold text-white text-sm">
+                {pendingBookings.length === 1
+                  ? '1 new booking request is waiting for your response'
+                  : `${pendingBookings.length} new booking requests are waiting for your response`
+                }
+              </p>
+              <p className="text-xs text-surface-400 mt-0.5">
+                Accept or reject them below — users are notified instantly
+              </p>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <Link
+                to="/electrician/bookings"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400 text-xs font-semibold hover:bg-amber-500/25 transition-all"
+              >
+                <Zap size={13} /> View All
+              </Link>
+              <button
+                onClick={() => setShowBanner(false)}
+                className="p-2 rounded-lg text-surface-500 hover:text-surface-300 transition-colors"
+                title="Dismiss"
+              >
+                <XCircle size={16} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {statCards.map((stat) => {

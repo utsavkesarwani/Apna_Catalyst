@@ -9,6 +9,7 @@ import { updateLiveStatus } from '../controllers/admin.controller.js'
 import { protect } from '../middleware/auth.js'
 import { authorize } from '../middleware/role.js'
 import { uploadElectricianMedia } from '../middleware/upload.js'
+import { compressUploadedImages } from '../middleware/compressImages.js'
 
 const router = Router()
 
@@ -24,7 +25,7 @@ router.get('/me/earnings', protect, authorize('electrician'), getEarnings)
 router.get('/me/reviews', protect, authorize('electrician'), getMyReviews)
 router.put('/profile', protect, authorize('electrician'), updateProfile)
 router.put('/availability', protect, authorize('electrician'), updateAvailability)
-router.post('/upload-media', protect, authorize('electrician'), uploadElectricianMedia, uploadMediaFiles)
+router.post('/upload-media', protect, authorize('electrician'), uploadElectricianMedia, compressUploadedImages, uploadMediaFiles)
 router.put('/live-status', protect, authorize('electrician'), updateLiveStatus)
 
 // Public dynamic routes (must be after /me to avoid conflict)

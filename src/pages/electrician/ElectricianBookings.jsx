@@ -16,6 +16,7 @@ const statusConfig = {
   'completed': { bg: 'bg-primary-500/10', text: 'text-primary-400', border: 'border-primary-500/20', dot: 'bg-primary-400', label: 'Completed' },
   'pending': { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20', dot: 'bg-amber-400', label: 'Pending' },
   'cancelled': { bg: 'bg-red-500/10', text: 'text-red-400', border: 'border-red-500/20', dot: 'bg-red-400', label: 'Cancelled' },
+  'rejected': { bg: 'bg-orange-500/10', text: 'text-orange-400', border: 'border-orange-500/20', dot: 'bg-orange-400', label: 'Rejected' },
 }
 
 const statusUpdateMap = {
@@ -51,15 +52,16 @@ export default function ElectricianBookings() {
       ])
 
       // Also fetch in-progress and assigned bookings for the active tab
-      const [inProgressRes, assignedRes] = await Promise.all([
+      const [inProgressRes, assignedRes, rejectedRes] = await Promise.all([
         getElectricianBookings({ status: 'in-progress' }),
         getElectricianBookings({ status: 'assigned' }),
+        getElectricianBookings({ status: 'rejected', limit: 20 }),
       ])
 
       setBookings({
         active: [...(inProgressRes.bookings || []), ...(assignedRes.bookings || []), ...(activeRes.bookings || [])],
         pending: pendingRes.bookings || [],
-        history: historyRes.bookings || [],
+        history: [...(historyRes.bookings || []), ...(rejectedRes.bookings || [])],
       })
     } catch (err) {
       console.error('Failed to load bookings:', err)

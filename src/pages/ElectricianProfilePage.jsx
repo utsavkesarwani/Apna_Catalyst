@@ -37,8 +37,8 @@ export default function ElectricianProfilePage() {
             id: e._id || e.id,
             name: e.name,
             photo: e.profilePhoto || null,
-            rating: e.rating?.avg || e.rating || 0,
-            reviewCount: e.rating?.count || e.reviewCount || 0,
+            rating: e.rating?.avg ?? (typeof e.rating === 'number' ? e.rating : 0),
+            reviewCount: e.rating?.count ?? (e.reviewCount || 0),
             experience: e.experience || 0,
             location: e.location || {},
             categories: e.categories || [],
@@ -46,9 +46,9 @@ export default function ElectricianProfilePage() {
             bio: e.bio || '',
             availability: e.availability || { isAvailable: true },
             services: e.services || [],
-            priceRange: e.priceRange?.min 
+            priceRange: (e.priceRange && e.priceRange.min > 0 && e.priceRange.max > 0)
               ? `₹${e.priceRange.min} - ₹${e.priceRange.max}` 
-              : (e.priceRange || '₹200 - ₹5,000'),
+              : 'Contact for pricing',
             completedJobs: e.completedJobs || 0,
             verified: e.aadhar?.verified || e.verified || false,
             workImages: e.workImages || [],

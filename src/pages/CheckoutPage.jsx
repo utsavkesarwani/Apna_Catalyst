@@ -93,8 +93,13 @@ export default function CheckoutPage() {
       console.error('Booking error:', err)
 
       if (err.status === 401) {
-        setError('Session expired. Please sign in again.')
-        return
+        // If it's a demo token, it will naturally fail the backend JWT verification.
+        // We should let it fall through to the mock flow instead of blocking it.
+        const isDemo = localStorage.getItem('apna_electro_token')?.startsWith('demo_token_')
+        if (!isDemo) {
+          setError('Session expired. Please sign in again.')
+          return
+        }
       }
 
       // Fallback: navigate with mock booking ID

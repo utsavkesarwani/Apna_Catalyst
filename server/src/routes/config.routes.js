@@ -9,8 +9,8 @@ const router = Router()
 router.get('/', getPublicConfig)
 router.get('/group/:group', getConfigByGroup)
 
-// Superadmin only
-router.put('/:key', protect, isSuperAdmin, updateConfig)
+// Superadmin only — bulk MUST come before /:key to avoid wildcard match
 router.post('/bulk', protect, isSuperAdmin, bulkUpdateConfig)
+router.put('/:key', protect, isSuperAdmin, updateConfig)
 
 export default router

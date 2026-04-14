@@ -43,13 +43,13 @@ const bookingSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'confirmed', 'assigned', 'in-progress', 'completed', 'cancelled'],
+    enum: ['pending', 'confirmed', 'assigned', 'in-progress', 'completed', 'cancelled', 'rejected'],
     default: 'pending',
   },
   statusHistory: [{
     status: {
       type: String,
-      enum: ['pending', 'confirmed', 'assigned', 'in-progress', 'completed', 'cancelled'],
+      enum: ['pending', 'confirmed', 'assigned', 'in-progress', 'completed', 'cancelled', 'rejected'],
     },
     timestamp: {
       type: Date,
@@ -158,6 +158,11 @@ bookingSchema.pre('save', function (next) {
 // Virtual: is active booking
 bookingSchema.virtual('isActive').get(function () {
   return ['pending', 'confirmed', 'assigned', 'in-progress'].includes(this.status)
+})
+
+// Virtual: is rejected by electrician
+bookingSchema.virtual('isRejected').get(function () {
+  return this.status === 'rejected'
 })
 
 // Virtual: booking ID formatted

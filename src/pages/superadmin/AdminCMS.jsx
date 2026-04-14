@@ -59,19 +59,16 @@ export default function AdminCMS() {
     try {
       const configs = Object.entries(config).map(([key, value]) => ({
         key,
-        value: String(value),
-        type: 'string',
-        group: getGroup(key),
-        label: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+        value: String(value)
       }))
       await bulkUpdateConfig(configs)
       // Refresh global config so all components update instantly
       await refreshConfig()
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
-    } catch {
-      setSaved(true)
-      setTimeout(() => setSaved(false), 3000)
+    } catch (error) {
+      console.error('Failed to save configuration:', error)
+      alert(error?.message || 'Failed to save configuration')
     } finally {
       setSaving(false)
     }

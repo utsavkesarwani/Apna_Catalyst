@@ -160,6 +160,30 @@ export default function BookingPage() {
     }
   }, [location.search])
 
+  // Handle rebook flow from rejected booking
+  useEffect(() => {
+    const rebookData = location.state?.rebookData
+    if (!rebookData) return
+
+    // Pre-fill from the rejected booking
+    const preElec = rebookData.preSelectedElectrician
+    if (preElec) {
+      setPreSelectedElectrician(preElec)
+      setSelectedElectrician(preElec)
+    }
+
+    setBooking(prev => ({
+      ...prev,
+      service: rebookData.service || prev.service,
+      description: rebookData.description || prev.description,
+      electricianId: preElec?.id || null,
+    }))
+
+    // Jump to Date & Time step (step 3 in default flow, step 2 if electrician pre-selected)
+    // Since we have a pre-selected electrician, skip Choose Electrician
+    setStep(id ? 2 : 3)
+  }, [location.state?.rebookData])
+
   // Load pre-selected electrician
   useEffect(() => {
     if (!id) { setDataLoading(false); return }

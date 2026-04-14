@@ -11,6 +11,7 @@ import {
   verifyOTP as verifyOTPAPI,
   getMe,
 } from '../api/user.api.js'
+import { adminLogin as adminLoginAPI } from '../api/admin.api.js'
 
 const AuthContext = createContext(null)
 
@@ -159,13 +160,9 @@ export function AuthProvider({ children }) {
     setLoading(true)
     setError(null)
     try {
-      const response = await userLoginAPI({ email, password })
-      const role = response.user?.role
-      if (role !== 'admin' && role !== 'superadmin') {
-        throw new Error('Access denied: Admin credentials required')
-      }
+      const response = await adminLoginAPI({ email, password })
       setToken(response.token)
-      setUser({ ...response.user, role })
+      setUser({ ...response.user, role: response.user.role || 'superadmin' })
       return response
     } catch (err) {
       const msg = err.message || 'Admin login failed'

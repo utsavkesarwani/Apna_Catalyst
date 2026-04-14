@@ -2,7 +2,7 @@ import Electrician from '../models/Electrician.js'
 import Booking from '../models/Booking.js'
 import Review from '../models/Review.js'
 import ApiError from '../utils/ApiError.js'
-import { authResponse } from '../utils/generateToken.js'
+import { generateToken, authResponse } from '../utils/generateToken.js'
 
 /**
  * @desc    Register a new electrician
@@ -13,7 +13,10 @@ export const registerElectrician = async (req, res, next) => {
   try {
     const { name, email, mobile, password, location, experience, bio, categories, services } = req.body
 
-    const existing = await Electrician.findOne({ $or: [{ email }, { mobile }] })
+    // Sanitize mobile: strip country code, spaces, dashes
+    const cleanMobile = (mobile || '').replace(/[\s\-\+]/g, '').replace(/^91/, '').slice(-10)
+
+    const existing = await Electrician.findOne({ $or: [{ email }, { mobile: cleanMobile }] })
     if (existing) {
       throw ApiError.conflict('Electrician with this email or mobile already exists')
     }
@@ -21,19 +24,23 @@ export const registerElectrician = async (req, res, next) => {
     const electrician = await Electrician.create({
       name,
       email,
-      mobile,
+      mobile: cleanMobile,
       passwordHash: password,
       location,
-      experience,
+      experience: parseInt(experience) || 0,
       bio: bio || '',
       categories: categories || [],
       services: services || [],
-      isApproved: false, // Requires admin approval
+      isApproved: false, // Requires admin approval to show on the website
     })
+
+    // Generate JWT so the client can upload media right after registration
+    const token = generateToken({ id: electrician._id, role: 'electrician' })
 
     res.status(201).json({
       success: true,
       message: 'Registration successful! Your profile is pending admin approval.',
+      token,
       electrician: {
         id: electrician._id,
         name: electrician.name,

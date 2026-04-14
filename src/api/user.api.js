@@ -80,6 +80,9 @@ export const cancelBooking = (id, reason = '') =>
 export const getBookedSlots = (electricianId, date) =>
   apiClient.get(`/bookings/slots/${electricianId}`, { params: { date } })
 
+export const getBookingAlternatives = (bookingId) =>
+  apiClient.get(`/bookings/${bookingId}/alternatives`)
+
 // ═══════════════════════════════════════════
 // Payment APIs
 // ═══════════════════════════════════════════

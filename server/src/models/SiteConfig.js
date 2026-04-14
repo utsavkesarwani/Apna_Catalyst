@@ -57,13 +57,15 @@ siteConfigSchema.statics.getByGroup = async function (group) {
 
 // Static: set config
 siteConfigSchema.statics.setConfig = async function (key, value, options = {}) {
+  const updatePayload = {
+    value,
+    ...options,
+    updatedAt: new Date(),
+  }
+
   return this.findOneAndUpdate(
     { key },
-    {
-      value,
-      ...options,
-      updatedAt: new Date(),
-    },
+    { $set: updatePayload },
     { upsert: true, new: true }
   )
 }

@@ -1,0 +1,82 @@
+# =============================================
+#  Apna Electro — Root .gitignore
+# =============================================
+
+# ─── Dependencies ────────────────────────────
+node_modules/
+.pnp
+.pnp.js
+
+# ─── Build / Output ─────────────────────────
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# ─── Environment Variables (SENSITIVE) ───────
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+server/.env
+
+# ─── Logs ────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+server/error.log
+server/err.txt
+server/server_err.txt
+server/server_out.txt
+server/test_out.txt
+
+# ─── Test / Debug Artifacts ──────────────────
+server/test_*.txt
+server/test_*.js
+
+# ─── Uploaded Files ──────────────────────────
+server/uploads/
+uploads/
+
+# ─── OS Generated Files ─────────────────────
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~
+
+# ─── Editor / IDE ───────────────────────────
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.code-workspace
+.project
+.classpath
+.settings/
+
+# ─── Vite / PostCSS Cache ───────────────────
+*.local
+.cache/
+.parcel-cache/
+
+# ─── Coverage / Testing ─────────────────────
+coverage/
+.nyc_output/
+__tests__/__snapshots__/
+
+# ─── Misc ────────────────────────────────────
+*.pid
+*.seed
+*.pid.lock
+.eslintcache
+.stylelintcache
+package-lock.json

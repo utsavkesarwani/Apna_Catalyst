@@ -41,6 +41,13 @@ export default function ElectricianReviews() {
       setReviewsData(response)
     } catch (err) {
       console.error('Failed to load reviews:', err)
+      // Fallback so the page renders instead of spinning forever
+      setReviewsData({
+        reviews: [],
+        totalReviews: 0,
+        averageRating: 0,
+        distribution: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 },
+      })
     } finally {
       setLoading(false)
     }
@@ -239,22 +246,10 @@ export default function ElectricianReviews() {
                   transition={{ duration: 0.3, delay: index * 0.05 }}
                   className="glass-card p-5 hover:border-primary-500/15 transition-all duration-300"
                 >
-                  <div className="flex items-start gap-4">
-                    {/* Avatar */}
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary-500/20 to-electric-500/10 border border-primary-500/20 flex items-center justify-center text-primary-400 font-bold text-sm flex-shrink-0">
-                      {(review.customer || 'C').charAt(0)}
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2 mb-1">
-                        <h4 className="text-sm font-semibold text-white">{review.customer}</h4>
-                        <span className="text-xs text-surface-500">
-                          {new Date(review.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                        </span>
-                      </div>
-
-                      {/* Stars */}
-                      <div className="flex items-center gap-2 mb-2">
+                  <div className="space-y-3">
+                    {/* Stars & Date */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
                         <div className="flex items-center gap-0.5">
                           {Array.from({ length: 5 }).map((_, i) => (
                             <Star
@@ -270,18 +265,20 @@ export default function ElectricianReviews() {
                         </div>
                         <span className="text-xs text-surface-500">{ratingLabels[review.rating]}</span>
                       </div>
-
-                      {review.comment && (
-                        <p className="text-sm text-surface-300 leading-relaxed">"{review.comment}"</p>
-                      )}
-
-                      <div className="flex items-center gap-3 mt-3">
-                        <span className="badge-primary text-[11px]">{review.service}</span>
-                        {review.bookingId && (
-                          <span className="text-[11px] text-surface-600">#{review.bookingId}</span>
-                        )}
-                      </div>
+                      <span className="text-xs text-surface-500">
+                        {new Date(review.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </span>
                     </div>
+
+                    {review.comment && (
+                      <p className="text-sm text-surface-300 leading-relaxed">"{review.comment}"</p>
+                    )}
+
+                    {review.service && (
+                      <div className="flex items-center gap-3">
+                        <span className="badge-primary text-[11px]">{review.service}</span>
+                      </div>
+                    )}
                   </div>
                 </motion.div>
               ))}

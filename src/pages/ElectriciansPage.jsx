@@ -47,14 +47,14 @@ export default function ElectriciansPage() {
         if (sortMap[filters.sort]) params.sort = sortMap[filters.sort]
 
         const response = await fetchElectricians(params)
-        if (!cancelled && response.electricians?.length > 0) {
+        if (!cancelled && response.electricians) {
           // Normalize API response to match card component expectations
           const normalized = response.electricians.map(e => ({
             id: e._id || e.id,
             name: e.name,
             photo: e.profilePhoto || null,
-            rating: e.rating?.avg || e.rating || 0,
-            reviewCount: e.rating?.count || e.reviewCount || 0,
+            rating: e.rating?.avg ?? (typeof e.rating === 'number' ? e.rating : 0),
+            reviewCount: e.rating?.count ?? (e.reviewCount || 0),
             experience: e.experience || 0,
             location: e.location || {},
             categories: e.categories || [],

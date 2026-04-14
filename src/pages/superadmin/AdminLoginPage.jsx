@@ -21,11 +21,21 @@ export default function AdminLoginPage() {
 
   const handleDemoLogin = async () => {
     setDemoLoading(true)
-    await new Promise(r => setTimeout(r, 600))
-    localStorage.setItem('apna_electro_token', 'demo_token_admin_preview')
-    localStorage.setItem('apna_electro_user', JSON.stringify(DEMO_ADMIN))
-    updateUser(DEMO_ADMIN)
-    window.location.href = '/superadmin'
+    setError(null)
+    try {
+      // Try real backend login with seeded admin credentials
+      await adminLogin('admin@apnaelectro.com', 'admin123')
+      window.location.href = '/superadmin'
+    } catch {
+      // Backend is down — fall back to demo-only mode (read-only preview)
+      await new Promise(r => setTimeout(r, 400))
+      localStorage.setItem('apna_electro_token', 'demo_token_admin_preview')
+      localStorage.setItem('apna_electro_user', JSON.stringify(DEMO_ADMIN))
+      updateUser(DEMO_ADMIN)
+      window.location.href = '/superadmin'
+    } finally {
+      setDemoLoading(false)
+    }
   }
 
   const handleSubmit = async (e) => {
