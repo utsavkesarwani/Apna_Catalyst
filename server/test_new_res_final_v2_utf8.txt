@@ -1,0 +1,29 @@
+﻿SEND OTP: {
+  success: true,
+  message: 'OTP sent successfully (mock)',
+  otp: '123456'
+}
+VERIFY OTP 1: {
+  success: true,
+  isNewUser: true,
+  message: 'OTP verified. Please provide your name to complete registration.',
+  mobile: '8888888888'
+}
+VERIFY OTP 2: {
+  success: true,
+  token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZDljOGQ5OTU4MTYxNTJmYjBlNmY4NCIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzc1ODgwNDA5LCJleHAiOjE3NzY0ODUyMDl9.YnhNpQ7TWw7Nam0QwND-oQnSeVOjAc7pssRsfzgy33E',
+  user: {
+    id: '69d9c8d995816152fb0e6f84',
+    name: 'New User',
+    email: '8888888888@apnaelectro.com',
+    mobile: '8888888888',
+    role: 'user',
+    location: {
+      coordinates: {},
+      city: '',
+      state: '',
+      country: 'India',
+      pincode: ''
+    }
+  }
+}
