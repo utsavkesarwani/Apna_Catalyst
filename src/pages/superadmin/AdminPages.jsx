@@ -101,10 +101,9 @@ export default function AdminPages() {
       }
       setSaved(true)
       setTimeout(() => { setSaved(false); setModal(null) }, 1000)
-    } catch {
-      // Apply locally
-      setSaved(true)
-      setTimeout(() => { setSaved(false); setModal(null) }, 1000)
+    } catch (error) {
+      console.error('Failed to save page:', error)
+      alert(error?.message || 'Failed to save page to database.')
     } finally {
       setSaving(false)
     }
