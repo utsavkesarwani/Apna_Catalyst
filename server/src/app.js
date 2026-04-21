@@ -3,8 +3,11 @@ import cors from 'cors'
 import helmet from 'helmet'
 import morgan from 'morgan'
 import rateLimit from 'express-rate-limit'
+import cookieParser from 'cookie-parser'
+import passport from 'passport'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import configurePassport from './config/passport.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -26,6 +29,9 @@ import pageRoutes from './routes/page.routes.js'
 import { errorHandler, notFound } from './middleware/errorHandler.js'
 
 const app = express()
+
+// ─── Configure Passport Strategy ───
+configurePassport()
 
 // ---------------------
 // Security Middleware
@@ -78,6 +84,10 @@ app.use((req, res, next) => {
 // ---------------------
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
+app.use(cookieParser())
+
+// ─── Passport (stateless, no sessions) ───
+app.use(passport.initialize())
 
 // ---------------------
 // Static File Serving (uploads)

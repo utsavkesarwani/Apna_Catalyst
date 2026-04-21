@@ -11,6 +11,7 @@ import CheckoutPage from './pages/CheckoutPage'
 import BookingTrackerPage from './pages/BookingTrackerPage'
 import JoinElectricianPage from './pages/JoinElectricianPage'
 import AuthPage from './pages/AuthPage'
+import GoogleAuthCallback from './pages/GoogleAuthCallback'
 import UserProfilePage from './pages/UserProfilePage'
 import ServicesPage from './pages/ServicesPage'
 import ContentPage from './pages/ContentPage'
@@ -143,6 +144,9 @@ function App() {
           <Footer />
         </div>
       } />
+
+      {/* Google OAuth callback — full-screen redirect handler, no chrome */}
+      <Route path="/auth/google/success" element={<GoogleAuthCallback />} />
       <Route path="/profile" element={
         <div className="min-h-screen bg-surface-950 flex flex-col">
           <Navbar />

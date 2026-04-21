@@ -19,16 +19,29 @@ const userSchema = new mongoose.Schema({
   },
   mobile: {
     type: String,
-    required: [true, 'Mobile number is required'],
     unique: true,
+    sparse: true, // Allow multiple null values (Google users may not have mobile)
     trim: true,
     match: [/^[6-9]\d{9}$/, 'Please provide a valid 10-digit Indian mobile number'],
   },
   passwordHash: {
     type: String,
-    required: [true, 'Password is required'],
     minlength: 6,
     select: false, // Don't return password in queries by default
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true, // Only indexed when present
+  },
+  authMethod: {
+    type: String,
+    enum: ['local', 'google'],
+    default: 'local',
+  },
+  avatar: {
+    type: String,
+    default: "" // This will store the URL of their Google profile picture
   },
   role: {
     type: String,
@@ -83,9 +96,9 @@ userSchema.index({ 'location.city': 1 })
 userSchema.index({ 'location.pincode': 1 })
     // Removed explicit indexes for email and mobile.
 
-// Hash password before saving
+// Hash password before saving (skip for Google OAuth users)
 userSchema.pre('save', async function (next) {
-  if (!this.isModified('passwordHash')) return next()
+  if (!this.passwordHash || !this.isModified('passwordHash')) return next()
   const salt = await bcrypt.genSalt(12)
   this.passwordHash = await bcrypt.hash(this.passwordHash, salt)
   next()

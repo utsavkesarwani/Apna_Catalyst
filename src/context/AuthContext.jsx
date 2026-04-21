@@ -176,6 +176,12 @@ export function AuthProvider({ children }) {
   // ─── Legacy login alias (for electrician panel backward compat) ───
   const login = electricianLogin
 
+  // ─── Google OAuth — called by GoogleAuthCallback page after redirect ───
+  const setGoogleUser = useCallback((token, userData) => {
+    setToken(token)
+    setUser({ ...userData, role: userData.role || 'user' })
+  }, [])
+
   // ─── Logout ───
   const logout = useCallback(() => {
     setToken(null)
@@ -227,6 +233,7 @@ export function AuthProvider({ children }) {
     adminLogin,
     sendOTP,
     verifyOTP,
+    setGoogleUser,
     logout,
     refreshProfile,
     updateUser,

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Phone, Mail, Lock, ArrowRight, Zap, Shield, AlertCircle, CheckCircle, Loader2 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import Button from '../components/ui/Button'
+import GoogleSignInButton from '../components/ui/GoogleSignInButton'
 
 export default function AuthPage() {
   const navigate = useNavigate()
@@ -399,6 +400,17 @@ export default function AuthPage() {
                     ? 'Create Account'
                     : 'Sign In'}
                 </Button>
+
+                {/* Google OAuth divider + button */}
+                <div className="relative flex items-center gap-3 my-1">
+                  <div className="flex-1 h-px bg-white/10" />
+                  <span className="text-xs text-surface-500 whitespace-nowrap">or</span>
+                  <div className="flex-1 h-px bg-white/10" />
+                </div>
+
+                <GoogleSignInButton
+                  label={mode === 'register' ? 'Sign up with Google' : 'Continue with Google'}
+                />
 
                 {/* Toggle */}
                 <p className="text-center text-sm text-surface-400">
