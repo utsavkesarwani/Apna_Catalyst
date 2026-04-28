@@ -26,6 +26,7 @@ export default function GoogleAuthCallback() {
     if (error) {
       const messages = {
         google_auth_failed: 'Google sign-in was cancelled or failed. Please try again.',
+        facebook_auth_failed: 'Facebook sign-in was cancelled or failed. Please try again.',
         server_error: 'A server error occurred. Please try again.',
       }
       setErrorMsg(messages[error] || 'Authentication failed. Please try again.')
@@ -87,7 +88,7 @@ export default function GoogleAuthCallback() {
           >
             <Loader2 size={36} className="text-primary-400 mx-auto animate-spin" />
             <h2 className="text-xl font-display font-bold text-white">Signing you in…</h2>
-            <p className="text-surface-400 text-sm">Completing Google authentication</p>
+            <p className="text-surface-400 text-sm">Completing authentication</p>
           </motion.div>
         )}
 
@@ -99,7 +100,7 @@ export default function GoogleAuthCallback() {
           >
             <CheckCircle size={40} className="text-emerald-400 mx-auto" />
             <h2 className="text-xl font-display font-bold text-white">Welcome!</h2>
-            <p className="text-surface-400 text-sm">Signed in with Google. Redirecting…</p>
+            <p className="text-surface-400 text-sm">Signed in successfully. Redirecting…</p>
           </motion.div>
         )}
 

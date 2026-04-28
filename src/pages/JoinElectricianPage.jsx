@@ -6,6 +6,7 @@ import {
   AlertCircle, Loader2, X, Image, Video, Play, Mic, MicOff, Eye, EyeOff
 } from 'lucide-react'
 import { electricianRegister } from '../api/electrician.api'
+import { submitSkillRequests } from '../api/admin.api'
 import Button from '../components/ui/Button'
 
 const workCategories = [
@@ -162,6 +163,9 @@ export default function JoinElectricianPage() {
   const [speechSupported, setSpeechSupported] = useState(false)
   const [speechLang, setSpeechLang]         = useState('hi-IN') // default Hindi
   const [showPassword, setShowPassword]     = useState(false)
+  const [customSkills, setCustomSkills]     = useState([])    // custom typed skills
+  const [showCustomInput, setShowCustomInput] = useState(false)
+  const [customInput, setCustomInput]       = useState('')
 
   // Check for Speech Recognition support
   useEffect(() => {
@@ -243,6 +247,25 @@ export default function JoinElectricianPage() {
     }))
   }
 
+  const addCustomSkill = () => {
+    const skill = customInput.trim()
+    if (!skill) return
+    if (customSkills.includes(skill) || form.categories.includes(skill)) return
+    setCustomSkills(prev => [...prev, skill])
+    setCustomInput('')
+  }
+
+  const removeCustomSkill = (skill) => {
+    setCustomSkills(prev => prev.filter(s => s !== skill))
+  }
+
+  const handleCustomKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      addCustomSkill()
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -250,6 +273,9 @@ export default function JoinElectricianPage() {
 
     try {
       // Step 1 — Register electrician (text data only)
+      // Merge pre-built + custom skills
+      const allCategories = [...form.categories, ...customSkills]
+
       const regRes = await electricianRegister({
         name: form.name,
         email: form.email,
@@ -258,9 +284,22 @@ export default function JoinElectricianPage() {
         location: { city: form.city, state: form.state },
         experience: parseInt(form.experience) || 0,
         bio: form.bio,
-        categories: form.categories,
+        categories: allCategories,
         services: form.categories.map(c => serviceSlugMap[c] || c.toLowerCase()),
       })
+
+      // Submit custom skill requests for admin review
+      if (customSkills.length > 0 && regRes?.electrician?._id) {
+        try {
+          await submitSkillRequests({
+            skills: customSkills,
+            electricianId: regRes.electrician._id,
+            electricianName: form.name,
+          })
+        } catch {
+          // Non-blocking — registration still succeeds
+        }
+      }
 
       // Step 2 — Upload media if files selected
       const token = regRes?.token
@@ -483,7 +522,77 @@ export default function JoinElectricianPage() {
                       {cat}
                     </button>
                   ))}
+
+                  {/* Others / Custom Skill Button */}
+                  <button
+                    type="button"
+                    onClick={() => setShowCustomInput(prev => !prev)}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-lg border transition-all duration-300 ${
+                      showCustomInput || customSkills.length > 0
+                        ? 'bg-accent-500/15 text-accent-400 border-accent-500/30'
+                        : 'bg-surface-800/50 text-amber-400 border-amber-500/30 hover:border-amber-500/50 hover:bg-amber-500/5'
+                    }`}
+                  >
+                    ➕ Others / कोई और skill?
+                  </button>
                 </div>
+
+                {/* Custom Skills Tags */}
+                {customSkills.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {customSkills.map(skill => (
+                      <span
+                        key={skill}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg bg-accent-500/10 text-accent-400 border border-accent-500/20"
+                      >
+                        ⭐ {skill}
+                        <button
+                          type="button"
+                          onClick={() => removeCustomSkill(skill)}
+                          className="ml-0.5 hover:text-red-400 transition-colors"
+                        >
+                          <X size={12} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {/* Custom Skill Input */}
+                <AnimatePresence>
+                  {showCustomInput && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mt-3"
+                    >
+                      <div className="p-3 rounded-xl bg-surface-800/50 border border-surface-700/30">
+                        <p className="text-xs text-surface-400 mb-2">
+                          अपनी स्पेशल स्किल लिखें / Type your specialization and press Enter:
+                        </p>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={customInput}
+                            onChange={(e) => setCustomInput(e.target.value)}
+                            onKeyDown={handleCustomKeyDown}
+                            placeholder="e.g., Solar Panel Expert, EV Charger Installation"
+                            className="input-field flex-1 text-sm"
+                          />
+                          <button
+                            type="button"
+                            onClick={addCustomSkill}
+                            disabled={!customInput.trim()}
+                            className="px-4 py-2 rounded-lg bg-accent-500/15 text-accent-400 border border-accent-500/30 text-xs font-medium hover:bg-accent-500/25 transition-all disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                          >
+                            + Add
+                          </button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
 
               {/* Aadhar */}
@@ -627,7 +736,7 @@ export default function JoinElectricianPage() {
               <Button
                 variant="accent" size="lg" className="w-full"
                 type="submit"
-                disabled={loading || form.categories.length === 0}
+                disabled={loading || (form.categories.length === 0 && customSkills.length === 0)}
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">

@@ -41,6 +41,7 @@ import AdminCMS from './pages/superadmin/AdminCMS'
 import AdminServices from './pages/superadmin/AdminServices'
 import AdminAnalytics from './pages/superadmin/AdminAnalytics'
 import AdminPages from './pages/superadmin/AdminPages'
+import AdminLocations from './pages/superadmin/AdminLocations'
 import { useSiteConfig } from './context/SiteConfigContext.jsx'
 
 function App() {
@@ -205,6 +206,7 @@ function App() {
         <Route path="bookings" element={<AdminBookings />} />
         <Route path="cms" element={<AdminCMS />} />
         <Route path="services" element={<AdminServices />} />
+        <Route path="locations" element={<AdminLocations />} />
         <Route path="analytics" element={<AdminAnalytics />} />
         <Route path="pages" element={<AdminPages />} />
       </Route>

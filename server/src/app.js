@@ -24,6 +24,8 @@ import adminRoutes from './routes/admin.routes.js'
 import paymentRoutes from './routes/payment.routes.js'
 import superadminRoutes from './routes/superadmin.routes.js'
 import pageRoutes from './routes/page.routes.js'
+import locationRoutes from './routes/location.routes.js'
+import skillRequestRoutes from './routes/skillRequest.routes.js'
 
 // Middleware imports
 import { errorHandler, notFound } from './middleware/errorHandler.js'
@@ -138,6 +140,8 @@ app.use('/api/admin', adminRoutes)
 app.use('/api/payments', paymentRoutes)
 app.use('/api/superadmin', superadminRoutes)
 app.use('/api/pages', pageRoutes)
+app.use('/api/locations', locationRoutes)
+app.use('/api/skill-requests', skillRequestRoutes)
 
 // ---------------------
 // Error Handling

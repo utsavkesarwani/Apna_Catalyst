@@ -5,6 +5,7 @@ import { Phone, Mail, Lock, ArrowRight, Zap, Shield, AlertCircle, CheckCircle, L
 import { useAuth } from '../context/AuthContext'
 import Button from '../components/ui/Button'
 import GoogleSignInButton from '../components/ui/GoogleSignInButton'
+import FacebookSignInButton from '../components/ui/FacebookSignInButton'
 
 export default function AuthPage() {
   const navigate = useNavigate()
@@ -410,6 +411,10 @@ export default function AuthPage() {
 
                 <GoogleSignInButton
                   label={mode === 'register' ? 'Sign up with Google' : 'Continue with Google'}
+                />
+
+                <FacebookSignInButton
+                  label={mode === 'register' ? 'Sign up with Facebook' : 'Continue with Facebook'}
                 />
 
                 {/* Toggle */}

@@ -1,18 +1,18 @@
 import { generateToken } from '../utils/generateToken.js'
 
 /**
- * @desc    Google OAuth callback handler
+ * @desc    Generic OAuth callback handler (Google + Facebook)
  *          Issues a JWT in an httpOnly cookie and redirects to frontend
- * @route   GET /api/auth/google/callback
+ * @route   GET /api/auth/google/callback, /api/auth/facebook/callback
  * @access  Public (Passport handles auth)
  */
-export const googleCallback = (req, res) => {
+const createOAuthCallback = (provider) => (req, res) => {
   try {
     const user = req.user
 
     if (!user) {
       return res.redirect(
-        `${process.env.CLIENT_URL || 'http://localhost:5173'}/auth?error=google_auth_failed`
+        `${process.env.CLIENT_URL || 'http://localhost:5173'}/auth?error=${provider}_auth_failed`
       )
     }
 
@@ -29,8 +29,7 @@ export const googleCallback = (req, res) => {
       path: '/',
     })
 
-    // Redirect to frontend with token in URL fragment (not query param for security)
-    // The frontend will extract it, store in localStorage, and clear the URL
+    // Redirect to frontend with token + user data
     const redirectUrl = new URL('/auth/google/success', process.env.CLIENT_URL || 'http://localhost:5173')
     redirectUrl.searchParams.set('token', token)
     redirectUrl.searchParams.set('user', JSON.stringify({
@@ -40,14 +39,17 @@ export const googleCallback = (req, res) => {
       mobile: user.mobile || '',
       role: user.role || 'user',
       avatar: user.avatar || '',
-      authMethod: user.authMethod || 'google',
+      authMethod: user.authMethod || provider,
     }))
 
     res.redirect(redirectUrl.toString())
   } catch (error) {
-    console.error('Google OAuth callback error:', error)
+    console.error(`${provider} OAuth callback error:`, error)
     res.redirect(
       `${process.env.CLIENT_URL || 'http://localhost:5173'}/auth?error=server_error`
     )
   }
 }
+
+export const googleCallback = createOAuthCallback('google')
+export const facebookCallback = createOAuthCallback('facebook')

@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import {
   Users, Wrench, CalendarCheck, IndianRupee, TrendingUp,
   ArrowUpRight, ArrowDownRight, ChevronRight, Clock,
-  AlertCircle, CheckCircle2, Loader2, ShieldCheck, Activity
+  AlertCircle, CheckCircle2, Loader2, ShieldCheck, Activity, MapPin
 } from 'lucide-react'
 import { getAnalyticsOverview, getRevenueAnalytics, getAllBookings } from '../../api/admin.api.js'
 
@@ -234,6 +234,7 @@ export default function AdminDashboard() {
               { label: 'Pending Approvals', count: analytics?.pendingApprovals || 0, icon: ShieldCheck, color: 'purple', link: '/superadmin/electricians' },
               { label: 'Active Bookings', count: analytics?.activeBookings || 0, icon: Activity, color: 'blue', link: '/superadmin/bookings' },
               { label: 'Manage Services', count: null, icon: TrendingUp, color: 'emerald', link: '/superadmin/services' },
+              { label: 'Service Areas', count: null, icon: MapPin, color: 'cyan', link: '/superadmin/locations' },
               { label: 'Site Settings', count: null, icon: AlertCircle, color: 'amber', link: '/superadmin/cms' },
             ].map((action) => {
               const Icon = action.icon
@@ -241,6 +242,7 @@ export default function AdminDashboard() {
                 purple: { bg: 'bg-purple-500/10', text: 'text-purple-400', border: 'border-purple-500/20', hover: 'hover:border-purple-500/40' },
                 blue:   { bg: 'bg-blue-500/10', text: 'text-blue-400', border: 'border-blue-500/20', hover: 'hover:border-blue-500/40' },
                 emerald:{ bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/20', hover: 'hover:border-emerald-500/40' },
+                cyan:   { bg: 'bg-cyan-500/10', text: 'text-cyan-400', border: 'border-cyan-500/20', hover: 'hover:border-cyan-500/40' },
                 amber:  { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20', hover: 'hover:border-amber-500/40' },
               }
               const c = colorMap[action.color]

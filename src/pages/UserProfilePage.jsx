@@ -13,6 +13,7 @@ export default function UserProfilePage() {
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
+    mobile: user?.mobile || '',
     location: {
       city: user?.location?.city || '',
       state: user?.location?.state || '',
@@ -26,6 +27,7 @@ export default function UserProfilePage() {
       setFormData({
         name: user.name || '',
         email: user.email || '',
+        mobile: user.mobile || '',
         location: {
           city: user.location?.city || '',
           state: user.location?.state || '',
@@ -149,6 +151,15 @@ export default function UserProfilePage() {
                         onChange={e => setFormData({...formData, email: e.target.value})}
                       />
                     </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium text-surface-400 ml-1">Mobile Number</label>
+                      <input 
+                        className="input-field" 
+                        value={formData.mobile} 
+                        onChange={e => setFormData({...formData, mobile: e.target.value})}
+                        placeholder="Add your mobile number"
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-2">
@@ -209,7 +220,9 @@ export default function UserProfilePage() {
                       </div>
                       <div>
                         <p className="text-xs text-surface-500 font-medium uppercase tracking-wider mb-0.5">Mobile Number</p>
-                        <p className="text-surface-100 font-medium">+91 {user?.mobile}</p>
+                        <p className="text-surface-100 font-medium">
+                          {user?.mobile ? `+91 ${user.mobile}` : <span className="text-surface-400 italic">Not provided</span>}
+                        </p>
                       </div>
                     </div>
 

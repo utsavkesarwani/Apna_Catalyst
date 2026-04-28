@@ -24,7 +24,7 @@ export const getProfile = async (req, res, next) => {
  */
 export const updateProfile = async (req, res, next) => {
   try {
-    const allowedUpdates = ['name', 'email', 'avatar', 'location']
+    const allowedUpdates = ['name', 'email', 'mobile', 'avatar', 'location', 'detailedAddress']
     const updates = {}
 
     for (const key of allowedUpdates) {

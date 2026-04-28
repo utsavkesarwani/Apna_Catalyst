@@ -4,7 +4,7 @@ import {
   Settings, Plus, Edit3, Trash2, Save, X, Loader2,
   GripVertical, CheckCircle2, AlertCircle, Eye, EyeOff
 } from 'lucide-react'
-import { getServices, createService, updateService, deleteService } from '../../api/admin.api.js'
+import { getAllServicesAdmin, createService, updateService, deleteService, toggleServiceStatus } from '../../api/admin.api.js'
 
 const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.05 } } }
 const item = { hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0 } }
@@ -29,7 +29,7 @@ export default function AdminServices() {
   const loadServices = async () => {
     setLoading(true)
     try {
-      const res = await getServices()
+      const res = await getAllServicesAdmin()
       setServices(res.services || [])
     } catch {
       setServices([
@@ -98,12 +98,18 @@ export default function AdminServices() {
   }
 
   const toggleActive = async (service) => {
-    try {
-      await updateService(service._id, { isActive: !service.isActive })
-    } catch {}
+    // Optimistic update
     setServices(prev =>
       prev.map(s => s._id === service._id ? { ...s, isActive: !s.isActive } : s)
     )
+    try {
+      await toggleServiceStatus(service._id)
+    } catch {
+      // Revert on failure
+      setServices(prev =>
+        prev.map(s => s._id === service._id ? { ...s, isActive: service.isActive } : s)
+      )
+    }
   }
 
   return (
@@ -150,13 +156,18 @@ export default function AdminServices() {
                     <span className="text-xs text-surface-500">/{service.slug}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex items-center gap-1">
+                  {/* Toggle switch — always visible */}
                   <button
                     onClick={() => toggleActive(service)}
-                    className="p-1.5 rounded-lg text-surface-400 hover:text-white hover:bg-surface-800/50 transition-all"
-                    title={service.isActive !== false ? 'Disable' : 'Enable'}
+                    className="relative w-10 h-5 rounded-full transition-colors shrink-0 mr-1"
+                    style={{ background: service.isActive !== false ? '#10b981' : '#374151' }}
+                    title={service.isActive !== false ? 'Click to deactivate' : 'Click to activate'}
                   >
-                    {service.isActive !== false ? <Eye size={14} /> : <EyeOff size={14} />}
+                    <div
+                      className="absolute top-0.5 w-4 h-4 rounded-full bg-white shadow-md transition-all duration-200"
+                      style={{ left: service.isActive !== false ? '22px' : '2px' }}
+                    />
                   </button>
                   <button
                     onClick={() => openEdit(service)}

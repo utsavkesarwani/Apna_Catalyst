@@ -34,14 +34,15 @@ const userSchema = new mongoose.Schema({
     unique: true,
     sparse: true, // Only indexed when present
   },
+  facebookId: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
   authMethod: {
     type: String,
-    enum: ['local', 'google'],
+    enum: ['local', 'google', 'facebook'],
     default: 'local',
-  },
-  avatar: {
-    type: String,
-    default: "" // This will store the URL of their Google profile picture
   },
   role: {
     type: String,
@@ -61,6 +62,14 @@ const userSchema = new mongoose.Schema({
       lat: { type: Number },
       lng: { type: Number },
     },
+  },
+  detailedAddress: {
+    flatNo: { type: String, trim: true, default: '' },
+    landmark: { type: String, trim: true, default: '' },
+    locality: { type: String, trim: true, default: '' },
+    city: { type: String, trim: true, default: '' },
+    state: { type: String, trim: true, default: '' },
+    pincode: { type: String, trim: true, default: '' },
   },
   bookings: [{
     type: mongoose.Schema.Types.ObjectId,

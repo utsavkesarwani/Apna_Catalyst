@@ -19,6 +19,46 @@ export const getServices = async (req, res, next) => {
 }
 
 /**
+ * @desc    Get ALL services including inactive (admin)
+ * @route   GET /api/services/all
+ * @access  Private (admin/superadmin)
+ */
+export const getAllServicesAdmin = async (req, res, next) => {
+  try {
+    const services = await Service.find()
+      .sort({ order: 1 })
+      .populate('subCategories')
+
+    res.json({ success: true, count: services.length, services })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
+ * @desc    Toggle service active status (admin)
+ * @route   PATCH /api/services/:id/toggle
+ * @access  Private (admin/superadmin)
+ */
+export const toggleService = async (req, res, next) => {
+  try {
+    const service = await Service.findById(req.params.id)
+    if (!service) throw ApiError.notFound('Service not found')
+
+    service.isActive = !service.isActive
+    await service.save()
+
+    res.json({
+      success: true,
+      message: service.isActive ? 'Service activated' : 'Service deactivated',
+      service,
+    })
+  } catch (error) {
+    next(error)
+  }
+}
+
+/**
  * @desc    Get service by slug
  * @route   GET /api/services/:slug
  * @access  Public

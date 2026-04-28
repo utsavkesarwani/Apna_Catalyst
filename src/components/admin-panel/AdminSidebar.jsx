@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Users, Wrench, CalendarCheck, Settings,
   BarChart3, Zap, LogOut, ChevronLeft, ChevronRight,
-  Globe, ShieldCheck, BookOpen
+  Globe, ShieldCheck, BookOpen, MapPin
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext.jsx'
 
@@ -16,6 +16,7 @@ const sidebarLinks = [
   { name: 'CMS / Content', path: '/superadmin/cms', icon: Globe },
   { name: 'Pages & Blog', path: '/superadmin/pages', icon: BookOpen },
   { name: 'Services', path: '/superadmin/services', icon: Settings },
+  { name: 'Service Areas', path: '/superadmin/locations', icon: MapPin },
   { name: 'Analytics', path: '/superadmin/analytics', icon: BarChart3 },
 ]
 

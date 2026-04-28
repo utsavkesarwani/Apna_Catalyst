@@ -11,6 +11,10 @@ import { updateLiveStatus } from '../controllers/admin.controller.js'
 import {
   getAllPages, getPageById, createPage, updatePage, deletePage,
 } from '../controllers/page.controller.js'
+import {
+  getAllLocations, createLocation, updateLocation,
+  toggleLocation, deleteLocation, bulkToggle,
+} from '../controllers/location.controller.js'
 import { protect } from '../middleware/auth.js'
 import { isAdmin, isSuperAdmin } from '../middleware/role.js'
 
@@ -48,5 +52,22 @@ router.get('/pages/:id', getPageById)
 router.post('/pages', createPage)
 router.put('/pages/:id', updatePage)
 router.delete('/pages/:id', deletePage)
+
+// Location / Service Area Management
+router.get('/locations', getAllLocations)
+router.post('/locations', createLocation)
+router.put('/locations/:id', updateLocation)
+router.patch('/locations/:id/toggle', toggleLocation)
+router.delete('/locations/:id', deleteLocation)
+router.patch('/locations/bulk-toggle', bulkToggle)
+
+// Skill Requests (custom specializations from electricians)
+import {
+  getAllSkillRequests, reviewSkillRequest, getPendingSkillCount,
+} from '../controllers/skillRequest.controller.js'
+
+router.get('/skill-requests', getAllSkillRequests)
+router.get('/skill-requests/count', getPendingSkillCount)
+router.patch('/skill-requests/:id', reviewSkillRequest)
 
 export default router

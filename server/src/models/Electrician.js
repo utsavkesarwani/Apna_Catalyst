@@ -45,6 +45,14 @@ const electricianSchema = new mongoose.Schema({
       lng: { type: Number },
     },
   },
+  detailedAddress: {
+    flatNo: { type: String, trim: true, default: '' },
+    landmark: { type: String, trim: true, default: '' },
+    locality: { type: String, trim: true, default: '' },
+    city: { type: String, trim: true, default: '' },
+    state: { type: String, trim: true, default: '' },
+    pincode: { type: String, trim: true, default: '' },
+  },
   experience: {
     type: Number,
     required: [true, 'Experience is required'],

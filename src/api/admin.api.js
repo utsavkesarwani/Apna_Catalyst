@@ -73,5 +73,55 @@ export const updateService = (id, data) =>
 export const deleteService = (id) =>
   api.delete(`/services/${id}`)
 
+export const getAllServicesAdmin = () =>
+  api.get('/services/all')
+
+export const toggleServiceStatus = (id) =>
+  api.patch(`/services/${id}/toggle`)
+
 export const reorderServices = (orderedIds) =>
   api.put('/services/reorder', { orderedIds })
+
+// ─── Location / Service Area Management ─────────
+export const getActiveLocations = () =>
+  api.get('/locations/active')
+
+export const getLocationStates = () =>
+  api.get('/locations/states')
+
+export const getLocationCities = (state) =>
+  api.get(`/locations/cities?state=${encodeURIComponent(state)}`)
+
+export const getLocationLocalities = (state, city) =>
+  api.get(`/locations/localities?state=${encodeURIComponent(state)}&city=${encodeURIComponent(city)}`)
+
+export const getAllLocations = (params = {}) =>
+  api.get('/admin/locations', { params })
+
+export const createLocationAdmin = (data) =>
+  api.post('/admin/locations', data)
+
+export const updateLocationAdmin = (id, data) =>
+  api.put(`/admin/locations/${id}`, data)
+
+export const toggleLocationAdmin = (id) =>
+  api.patch(`/admin/locations/${id}/toggle`)
+
+export const deleteLocationAdmin = (id) =>
+  api.delete(`/admin/locations/${id}`)
+
+export const bulkToggleLocations = (data) =>
+  api.patch('/admin/locations/bulk-toggle', data)
+
+// ─── Skill Requests ─────────────────────────────
+export const submitSkillRequests = (data) =>
+  api.post('/skill-requests', data)
+
+export const getSkillRequests = (params = {}) =>
+  api.get('/admin/skill-requests', { params })
+
+export const getPendingSkillCount = () =>
+  api.get('/admin/skill-requests/count')
+
+export const reviewSkillRequest = (id, data) =>
+  api.patch(`/admin/skill-requests/${id}`, data)

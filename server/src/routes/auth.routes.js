@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import passport from 'passport'
 import { register, login, sendOTPHandler, verifyOTPHandler, getMe, logout } from '../controllers/auth.controller.js'
-import { googleCallback } from '../controllers/google.controller.js'
+import { googleCallback, facebookCallback } from '../controllers/google.controller.js'
 import { protect } from '../middleware/auth.js'
 
 const router = Router()
@@ -14,33 +14,28 @@ router.post('/verify-otp', verifyOTPHandler)
 router.get('/me', protect, getMe)
 router.post('/logout', protect, logout)
 
-// ─── Google OAuth ───
-// Guard middleware: reject cleanly if credentials aren't configured yet
-const googleCredentialCheck = (req, res, next) => {
-  const id = process.env.GOOGLE_CLIENT_ID
-  const secret = process.env.GOOGLE_CLIENT_SECRET
+// ─── OAuth credential guards ───
+const makeCredentialCheck = (idKey, secretKey, providerName) => (req, res, next) => {
+  const id = process.env[idKey]
+  const secret = process.env[secretKey]
   if (!id || !secret ||
-      id === 'your_google_client_id_here' ||
-      secret === 'your_google_client_secret_here') {
+      id.startsWith('your_') || secret.startsWith('your_')) {
     return res.status(503).json({
       success: false,
-      message: 'Google OAuth is not configured on this server. Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to your .env file.',
+      message: `${providerName} OAuth is not configured. Add ${idKey} and ${secretKey} to your .env file.`,
     })
   }
   next()
 }
 
-// Step 1: Redirect user to Google's consent screen
-router.get(
-  '/google',
-  googleCredentialCheck,
+const googleCheck = makeCredentialCheck('GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'Google')
+const facebookCheck = makeCredentialCheck('FACEBOOK_APP_ID', 'FACEBOOK_APP_SECRET', 'Facebook')
+
+// ─── Google OAuth ───
+router.get('/google', googleCheck,
   passport.authenticate('google', { scope: ['profile', 'email'], session: false })
 )
-
-// Step 2: Google redirects back here with a code
-router.get(
-  '/google/callback',
-  googleCredentialCheck,
+router.get('/google/callback', googleCheck,
   passport.authenticate('google', {
     failureRedirect: `${process.env.CLIENT_URL || 'http://localhost:5173'}/auth?error=google_auth_failed`,
     session: false,
@@ -48,4 +43,17 @@ router.get(
   googleCallback
 )
 
+// ─── Facebook OAuth ───
+router.get('/facebook', facebookCheck,
+  passport.authenticate('facebook', { scope: ['email'], session: false })
+)
+router.get('/facebook/callback', facebookCheck,
+  passport.authenticate('facebook', {
+    failureRedirect: `${process.env.CLIENT_URL || 'http://localhost:5173'}/auth?error=facebook_auth_failed`,
+    session: false,
+  }),
+  facebookCallback
+)
+
 export default router
+
