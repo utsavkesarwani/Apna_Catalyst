@@ -68,7 +68,12 @@ export default function AdminCMS() {
       setTimeout(() => setSaved(false), 3000)
     } catch (error) {
       console.error('Failed to save configuration:', error)
-      alert(error?.message || 'Failed to save configuration')
+      if (error?.status === 401 || error?.message?.toLowerCase().includes('invalid token')) {
+        alert('Session expired. Please log in again.')
+        window.location.href = '/superadmin/login'
+      } else {
+        alert(error?.message || 'Failed to save configuration')
+      }
     } finally {
       setSaving(false)
     }

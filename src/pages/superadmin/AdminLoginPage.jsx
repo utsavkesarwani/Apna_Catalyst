@@ -24,15 +24,21 @@ export default function AdminLoginPage() {
     setError(null)
     try {
       // Try real backend login with seeded admin credentials
-      await adminLogin('admin@apnaelectro.com', 'admin123')
-      window.location.href = '/superadmin'
+      const response = await adminLogin('admin@apnaelectro.com', 'admin123')
+      // Explicitly persist token to localStorage before navigating
+      // (useEffect may not fire before navigate triggers a re-render)
+      if (response?.token) {
+        localStorage.setItem('apna_electro_token', response.token)
+        localStorage.setItem('apna_electro_user', JSON.stringify(response.user))
+      }
+      navigate('/superadmin')
     } catch {
       // Backend is down — fall back to demo-only mode (read-only preview)
       await new Promise(r => setTimeout(r, 400))
       localStorage.setItem('apna_electro_token', 'demo_token_admin_preview')
       localStorage.setItem('apna_electro_user', JSON.stringify(DEMO_ADMIN))
       updateUser(DEMO_ADMIN)
-      window.location.href = '/superadmin'
+      navigate('/superadmin')
     } finally {
       setDemoLoading(false)
     }
@@ -48,7 +54,12 @@ export default function AdminLoginPage() {
     }
 
     try {
-      await adminLogin(email, password)
+      const response = await adminLogin(email, password)
+      // Ensure token is persisted to localStorage before navigating
+      if (response?.token) {
+        localStorage.setItem('apna_electro_token', response.token)
+        localStorage.setItem('apna_electro_user', JSON.stringify(response.user))
+      }
       navigate('/superadmin')
     } catch {
       // Error is handled in context

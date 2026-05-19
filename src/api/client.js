@@ -41,10 +41,16 @@ apiClient.interceptors.response.use(
       localStorage.removeItem('apna_electro_token')
       localStorage.removeItem('apna_electro_user')
 
-      // Only redirect if not already on auth page
-      if (!window.location.pathname.includes('/auth') && !window.location.pathname.includes('/electrician/login')) {
-        // Dispatch custom event so auth context can react
-        window.dispatchEvent(new CustomEvent('auth:logout', { detail: { message } }))
+      const path = window.location.pathname
+      // Only redirect if not already on an auth/login page
+      if (!path.includes('/auth') && !path.includes('/electrician/login') && !path.includes('/superadmin/login')) {
+        if (path.startsWith('/superadmin')) {
+          // Redirect admin users to the admin login page
+          window.location.href = '/superadmin/login'
+        } else {
+          // Dispatch custom event so auth context can react
+          window.dispatchEvent(new CustomEvent('auth:logout', { detail: { message } }))
+        }
       }
     }
 
