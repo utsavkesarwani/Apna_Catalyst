@@ -2,7 +2,7 @@
 
   ⚡ ═══════════════════════════════════════════ ⚡
   ║                                               ║
-  ║   Apna Electro API Server                     ║
+  ║   Apna Catalyst API Server                     ║
   ║   Running on: http://localhost:5000           ║
   ║   Environment: development                 ║
   ║                                               ║

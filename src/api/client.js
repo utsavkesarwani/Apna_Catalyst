@@ -3,7 +3,7 @@ import axios from 'axios'
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api'
 
 /**
- * Axios instance with JWT interceptors for the Apna Electro API
+ * Axios instance with JWT interceptors for the Apna Catalyst API
  */
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -16,7 +16,7 @@ const apiClient = axios.create({
 // ─── Request Interceptor: Attach JWT token ───
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('apna_electro_token')
+    const token = localStorage.getItem('apna_catalyst_token')
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -34,12 +34,12 @@ apiClient.interceptors.response.use(
 
     // Token expired or invalid — force logout
     // (Skip this if we're using a demo testing token)
-    const token = localStorage.getItem('apna_electro_token')
+    const token = localStorage.getItem('apna_catalyst_token')
     const isDemoToken = token && token.startsWith('demo_token_')
     
     if (status === 401 && !isDemoToken) {
-      localStorage.removeItem('apna_electro_token')
-      localStorage.removeItem('apna_electro_user')
+      localStorage.removeItem('apna_catalyst_token')
+      localStorage.removeItem('apna_catalyst_user')
 
       const path = window.location.pathname
       // Only redirect if not already on an auth/login page

@@ -144,7 +144,7 @@ export default function AdminLocations() {
             Service Area Management
           </h2>
           <p className="text-sm text-surface-400 mt-1">
-            Manage cities and localities where Apna Electro operates
+            Manage cities and localities where Apna Catalyst operates
           </p>
         </div>
         <button

@@ -71,7 +71,7 @@ export default function ElectricianProfile() {
     setError(null)
     setSuccess(null)
 
-    const isDemo = localStorage.getItem('apna_electro_token') === 'demo_token_electrician_preview'
+    const isDemo = localStorage.getItem('apna_catalyst_token') === 'demo_token_electrician_preview'
 
     if (isDemo) {
       setTimeout(() => {
@@ -115,7 +115,7 @@ export default function ElectricianProfile() {
     setUploading(true)
     setError(null)
 
-    const isDemo = localStorage.getItem('apna_electro_token') === 'demo_token_electrician_preview'
+    const isDemo = localStorage.getItem('apna_catalyst_token') === 'demo_token_electrician_preview'
 
     if (isDemo) {
       setTimeout(() => {
@@ -153,7 +153,7 @@ export default function ElectricianProfile() {
     setUploading(true)
     setError(null)
 
-    const isDemo = localStorage.getItem('apna_electro_token') === 'demo_token_electrician_preview'
+    const isDemo = localStorage.getItem('apna_catalyst_token') === 'demo_token_electrician_preview'
 
     if (isDemo) {
       setTimeout(() => {

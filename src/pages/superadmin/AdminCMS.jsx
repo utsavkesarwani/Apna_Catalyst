@@ -11,10 +11,10 @@ const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { st
 const item = { hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0 } }
 
 const defaultConfig = {
-  site_name: 'Apna Electro',
+  site_name: 'Apna Catalyst',
   site_tagline: 'Expert Electricians at Your Doorstep',
   site_description: 'India\'s #1 platform for trusted, verified electrical service professionals.',
-  contact_email: 'support@apnaelectro.com',
+  contact_email: 'support@apnacatalyst.com',
   contact_phone: '+91 98765 43210',
   contact_address: 'New Delhi, India',
   hero_headline: 'Expert Electricians at Your Doorstep',
@@ -24,7 +24,7 @@ const defaultConfig = {
   hero_bg_image: '',
   banner_text: '🎉 Get 20% off on your first booking! Use code FIRST20',
   banner_active: 'true',
-  meta_title: 'Apna Electro — Trusted Electrical Services',
+  meta_title: 'Apna Catalyst — Trusted Electrical Services',
   meta_description: 'Book trusted, verified electricians for all your electrical needs. Fast service, fair prices.',
   featured_electricians: '',
 }
@@ -429,7 +429,7 @@ export default function AdminCMS() {
             <p className="text-xs text-surface-500 font-medium uppercase tracking-wider mb-3">Search Preview</p>
             <div className="p-4 rounded-xl bg-surface-800/30 border border-surface-700/30">
               <p className="text-blue-400 text-base font-medium mb-1 truncate">{config.meta_title || 'Page Title'}</p>
-              <p className="text-emerald-400 text-xs mb-1">https://apnaelectro.com</p>
+              <p className="text-emerald-400 text-xs mb-1">https://apnacatalyst.com</p>
               <p className="text-surface-400 text-sm line-clamp-2">{config.meta_description || 'Meta description preview...'}</p>
             </div>
           </div>

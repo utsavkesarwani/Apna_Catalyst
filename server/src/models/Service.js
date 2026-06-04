@@ -83,11 +83,18 @@ serviceSchema.pre('validate', function (next) {
   next()
 })
 
-// Virtual: sub-categories
+// Virtual: sub-categories (legacy — self-referencing)
 serviceSchema.virtual('subCategories', {
   ref: 'Service',
   localField: '_id',
   foreignField: 'parentCategory',
+})
+
+// Virtual: subcategories from dedicated Subcategory model
+serviceSchema.virtual('subcategories', {
+  ref: 'Subcategory',
+  localField: '_id',
+  foreignField: 'parentServiceId',
 })
 
 const Service = mongoose.model('Service', serviceSchema)

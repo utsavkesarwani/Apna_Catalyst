@@ -3,8 +3,8 @@ import { Navigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext.jsx'
 import { adminLogin as adminLoginAPI } from '../../api/admin.api.js'
 
-const TOKEN_KEY = 'apna_electro_token'
-const USER_KEY = 'apna_electro_user'
+const TOKEN_KEY = 'apna_catalyst_token'
+const USER_KEY = 'apna_catalyst_user'
 
 /**
  * Protects super admin routes — redirects to login if not authenticated as admin/superadmin.
@@ -29,7 +29,7 @@ export default function AdminProtectedRoute({ children }) {
       setUpgrading(true)
       try {
         // Try to authenticate with the seeded admin credentials
-        const response = await adminLoginAPI({ email: 'admin@apnaelectro.com', password: 'admin123' })
+        const response = await adminLoginAPI({ email: 'admin@apnacatalyst.com', password: 'admin123' })
         if (!cancelled && response?.token) {
           // Persist the real token immediately
           localStorage.setItem(TOKEN_KEY, response.token)

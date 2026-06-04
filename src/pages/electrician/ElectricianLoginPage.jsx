@@ -8,7 +8,7 @@ import { useAuth } from '../../context/AuthContext.jsx'
 const DEMO_ELECTRICIAN = {
   _id: 'demo_elec_001',
   name: 'Rajesh Kumar (Demo)',
-  email: 'rajesh@apnaelectro.com',
+  email: 'rajesh@apnacatalyst.com',
   mobile: '9888888881',
   role: 'electrician',
   isApproved: true,
@@ -40,8 +40,8 @@ export default function ElectricianLoginPage() {
     // Fake a short delay for UX
     await new Promise(r => setTimeout(r, 600))
     // Inject demo token + user into localStorage (AuthContext reads from there on mount)
-    localStorage.setItem('apna_electro_token', 'demo_token_electrician_preview')
-    localStorage.setItem('apna_electro_user', JSON.stringify(DEMO_ELECTRICIAN))
+    localStorage.setItem('apna_catalyst_token', 'demo_token_electrician_preview')
+    localStorage.setItem('apna_catalyst_user', JSON.stringify(DEMO_ELECTRICIAN))
     // Also update live context state so ProtectedRoute passes immediately
     updateUser(DEMO_ELECTRICIAN)
     // Force a page reload so AuthContext re-initializes from localStorage

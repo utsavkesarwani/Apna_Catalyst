@@ -95,7 +95,7 @@ export default function CheckoutPage() {
       if (err.status === 401) {
         // If it's a demo token, it will naturally fail the backend JWT verification.
         // We should let it fall through to the mock flow instead of blocking it.
-        const isDemo = localStorage.getItem('apna_electro_token')?.startsWith('demo_token_')
+        const isDemo = localStorage.getItem('apna_catalyst_token')?.startsWith('demo_token_')
         if (!isDemo) {
           setError('Session expired. Please sign in again.')
           return
@@ -205,7 +205,7 @@ export default function CheckoutPage() {
                     </div>
                   </div>
                   <p className="text-sm text-surface-400">Scan QR code with any UPI app</p>
-                  <p className="text-xs text-surface-600 mt-1">Or pay using UPI ID: apnaelectro@upi</p>
+                  <p className="text-xs text-surface-600 mt-1">Or pay using UPI ID: apnacatalyst@upi</p>
                 </motion.div>
               )}
 

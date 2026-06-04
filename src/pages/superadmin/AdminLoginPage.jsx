@@ -7,7 +7,7 @@ import { useAuth } from '../../context/AuthContext.jsx'
 const DEMO_ADMIN = {
   _id: 'demo_admin_001',
   name: 'Super Admin (Demo)',
-  email: 'admin@apnaelectro.com',
+  email: 'admin@apnacatalyst.com',
   role: 'superadmin',
 }
 
@@ -24,19 +24,19 @@ export default function AdminLoginPage() {
     setError(null)
     try {
       // Try real backend login with seeded admin credentials
-      const response = await adminLogin('admin@apnaelectro.com', 'admin123')
+      const response = await adminLogin('admin@apnacatalyst.com', 'admin123')
       // Explicitly persist token to localStorage before navigating
       // (useEffect may not fire before navigate triggers a re-render)
       if (response?.token) {
-        localStorage.setItem('apna_electro_token', response.token)
-        localStorage.setItem('apna_electro_user', JSON.stringify(response.user))
+        localStorage.setItem('apna_catalyst_token', response.token)
+        localStorage.setItem('apna_catalyst_user', JSON.stringify(response.user))
       }
       navigate('/superadmin')
     } catch {
       // Backend is down — fall back to demo-only mode (read-only preview)
       await new Promise(r => setTimeout(r, 400))
-      localStorage.setItem('apna_electro_token', 'demo_token_admin_preview')
-      localStorage.setItem('apna_electro_user', JSON.stringify(DEMO_ADMIN))
+      localStorage.setItem('apna_catalyst_token', 'demo_token_admin_preview')
+      localStorage.setItem('apna_catalyst_user', JSON.stringify(DEMO_ADMIN))
       updateUser(DEMO_ADMIN)
       navigate('/superadmin')
     } finally {
@@ -57,8 +57,8 @@ export default function AdminLoginPage() {
       const response = await adminLogin(email, password)
       // Ensure token is persisted to localStorage before navigating
       if (response?.token) {
-        localStorage.setItem('apna_electro_token', response.token)
-        localStorage.setItem('apna_electro_user', JSON.stringify(response.user))
+        localStorage.setItem('apna_catalyst_token', response.token)
+        localStorage.setItem('apna_catalyst_user', JSON.stringify(response.user))
       }
       navigate('/superadmin')
     } catch {
@@ -129,7 +129,7 @@ export default function AdminLoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@apnaelectro.com"
+                  placeholder="admin@apnacatalyst.com"
                   className="input-field pl-11"
                   autoComplete="email"
                   disabled={loading}

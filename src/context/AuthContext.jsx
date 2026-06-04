@@ -15,8 +15,8 @@ import { adminLogin as adminLoginAPI } from '../api/admin.api.js'
 
 const AuthContext = createContext(null)
 
-const TOKEN_KEY = 'apna_electro_token'
-const USER_KEY = 'apna_electro_user'
+const TOKEN_KEY = 'apna_catalyst_token'
+const USER_KEY = 'apna_catalyst_user'
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
@@ -35,6 +35,11 @@ export function AuthProvider({ children }) {
   const isElectrician = user?.role === 'electrician'
   const isUser = user?.role === 'user'
   const isAdmin = user?.role === 'admin' || user?.role === 'superadmin'
+
+  // ─── Onboarding check: user must have mobile + address filled ───
+  const needsOnboarding = isAuthenticated && isUser && (
+    !user?.mobile || (!user?.addresses?.length && !user?.detailedAddress?.flatNo)
+  )
 
   // ─── Persist to localStorage ───
   useEffect(() => {
@@ -225,6 +230,7 @@ export function AuthProvider({ children }) {
     isElectrician,
     isUser,
     isAdmin,
+    needsOnboarding,
     // Auth methods
     login,            // backward compat (electrician panel)
     electricianLogin,

@@ -19,7 +19,7 @@ const startServer = async () => {
     console.log(`
   ⚡ ═══════════════════════════════════════════ ⚡
   ║                                               ║
-  ║   Apna Electro API Server                     ║
+  ║   Apna Catalyst API Server                     ║
   ║   Running on: http://localhost:${PORT}           ║
   ║   Environment: ${process.env.NODE_ENV || 'development'}                 ║
   ║   WebSocket:   Socket.IO ✅                    ║

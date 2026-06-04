@@ -43,7 +43,7 @@ export const sendOTP = async (mobile) => {
   //   const twilio = await import('twilio')
   //   const client = twilio.default(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN)
   //   await client.messages.create({
-  //     body: `Your Apna Electro verification code is: ${otp}. Valid for ${process.env.OTP_EXPIRY_MINUTES || 5} minutes.`,
+  //     body: `Your Apna Catalyst verification code is: ${otp}. Valid for ${process.env.OTP_EXPIRY_MINUTES || 5} minutes.`,
   //     from: process.env.TWILIO_PHONE,
   //     to: `+91${mobile}`,
   //   })

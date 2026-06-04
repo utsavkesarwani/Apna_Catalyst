@@ -36,6 +36,8 @@ export const authResponse = (user, role = 'user') => {
       mobile: user.mobile,
       role,
       location: user.location,
+      detailedAddress: user.detailedAddress,
+      addresses: user.addresses || [],
     },
   }
 }

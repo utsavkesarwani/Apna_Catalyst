@@ -27,7 +27,7 @@ const DEFAULT_STATIC_SLUGS = [
 const defaultPage = {
   slug: '', title: '', content: '', excerpt: '',
   type: 'static', coverImage: '', tags: '',
-  author: 'Apna Electro Team', isPublished: false,
+  author: 'Apna Catalyst Team', isPublished: false,
   seo: { metaTitle: '', metaDescription: '' },
 }
 

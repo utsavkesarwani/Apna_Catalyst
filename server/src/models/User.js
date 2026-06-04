@@ -71,6 +71,10 @@ const userSchema = new mongoose.Schema({
     state: { type: String, trim: true, default: '' },
     pincode: { type: String, trim: true, default: '' },
   },
+  addresses: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Address',
+  }],
   bookings: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Booking',

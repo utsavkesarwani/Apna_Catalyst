@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Settings, Plus, Edit3, Trash2, Save, X, Loader2,
-  GripVertical, CheckCircle2, AlertCircle, Eye, EyeOff
+  GripVertical, CheckCircle2, AlertCircle, Eye, EyeOff, List
 } from 'lucide-react'
 import { getAllServicesAdmin, createService, updateService, deleteService, toggleServiceStatus } from '../../api/admin.api.js'
+import SubcategoryModal from '../../components/admin-panel/SubcategoryModal.jsx'
 
 const container = { hidden: { opacity: 0 }, show: { opacity: 1, transition: { staggerChildren: 0.05 } } }
 const item = { hidden: { opacity: 0, y: 15 }, show: { opacity: 1, y: 0 } }
@@ -23,6 +24,7 @@ export default function AdminServices() {
   const [saving, setSaving] = useState(false)
   const [deleteConfirm, setDeleteConfirm] = useState(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
+  const [subcatService, setSubcatService] = useState(null)
 
   useEffect(() => { loadServices() }, [])
 
@@ -184,7 +186,7 @@ export default function AdminServices() {
                 </div>
               </div>
               <p className="text-xs text-surface-400 mb-3 line-clamp-2">{service.description}</p>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-3">
                 <span className="text-sm font-display font-bold text-white">₹{(service.basePrice || 0).toLocaleString()}</span>
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium ${
                   service.isActive !== false
@@ -194,6 +196,12 @@ export default function AdminServices() {
                   {service.isActive !== false ? 'Active' : 'Disabled'}
                 </span>
               </div>
+              <button
+                onClick={() => setSubcatService(service)}
+                className="w-full flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold bg-surface-800/60 text-surface-300 border border-surface-700/50 hover:border-purple-500/30 hover:text-purple-300 hover:bg-purple-500/5 transition-all duration-200"
+              >
+                <List size={13} /> Manage Subcategories
+              </button>
             </motion.div>
           ))}
         </motion.div>
@@ -356,6 +364,16 @@ export default function AdminServices() {
             </motion.div>
             </div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* Subcategory Modal */}
+      <AnimatePresence>
+        {subcatService && (
+          <SubcategoryModal
+            service={subcatService}
+            onClose={() => setSubcatService(null)}
+          />
         )}
       </AnimatePresence>
     </motion.div>

@@ -7,19 +7,19 @@ import { getPageBySlug } from '../api/page.api.js'
 // Default content for each static slug — shown if backend is offline
 const FALLBACK_CONTENT = {
   'about': {
-    title: 'About Apna Electro',
+    title: 'About Apna Catalyst',
     content: `
       <h2>Our Mission</h2>
-      <p>Apna Electro is India's most trusted platform for connecting home and business owners with verified, skilled electricians. We believe that safe, quality electrical work should be accessible to everyone — from metro cities to small towns.</p>
+      <p>Apna Catalyst is India's most trusted platform for connecting home and business owners with verified, skilled electricians. We believe that safe, quality electrical work should be accessible to everyone — from metro cities to small towns.</p>
       <h2>Who We Are</h2>
-      <p>Founded in 2024, Apna Electro was built by a team passionate about solving the everyday frustration of finding reliable electricians. Our platform rigorously vets every professional before they can take their first booking.</p>
+      <p>Founded in 2024, Apna Catalyst was built by a team passionate about solving the everyday frustration of finding reliable electricians. Our platform rigorously vets every professional before they can take their first booking.</p>
       <h2>Our Promise</h2>
       <ul><li>✅ 100% verified electricians</li><li>✅ Transparent, upfront pricing</li><li>✅ Real-time booking tracking</li><li>✅ Satisfaction guaranteed</li></ul>
     `,
   },
   'terms': {
     title: 'Terms of Service',
-    content: `<h2>Terms of Service</h2><p>By using Apna Electro, you agree to these terms. Our platform connects customers with independent electricians. Apna Electro acts as an intermediary and is not responsible for the quality of individual electrician services, though we take every step to ensure professional standards.</p><h2>User Responsibilities</h2><p>Users must provide accurate information when booking. Cancellations made less than 2 hours before the appointment may incur a cancellation fee.</p>`,
+    content: `<h2>Terms of Service</h2><p>By using Apna Catalyst, you agree to these terms. Our platform connects customers with independent electricians. Apna Catalyst acts as an intermediary and is not responsible for the quality of individual electrician services, though we take every step to ensure professional standards.</p><h2>User Responsibilities</h2><p>Users must provide accurate information when booking. Cancellations made less than 2 hours before the appointment may incur a cancellation fee.</p>`,
   },
   'privacy': {
     title: 'Privacy Policy',
@@ -30,8 +30,8 @@ const FALLBACK_CONTENT = {
     content: `<h2>Refund Policy</h2><p>If you are not satisfied with a service, report the issue within 24 hours and we will arrange a free re-visit or a full refund. Refunds for digital payments are processed within 5-7 business days.</p>`,
   },
   'careers': {
-    title: 'Careers at Apna Electro',
-    content: `<h2>Join Our Team</h2><p>We are building the future of home services in India. If you are passionate about technology, operations, or community building, we would love to hear from you.</p><h2>Open Positions</h2><ul><li>City Operations Manager</li><li>Full Stack Developer</li><li>Electrician Onboarding Specialist</li></ul><p>Send your CV to <a href="mailto:careers@apnaelectro.com">careers@apnaelectro.com</a></p>`,
+    title: 'Careers at Apna Catalyst',
+    content: `<h2>Join Our Team</h2><p>We are building the future of home services in India. If you are passionate about technology, operations, or community building, we would love to hear from you.</p><h2>Open Positions</h2><ul><li>City Operations Manager</li><li>Full Stack Developer</li><li>Electrician Onboarding Specialist</li></ul><p>Send your CV to <a href="mailto:careers@apnacatalyst.com">careers@apnacatalyst.com</a></p>`,
   },
   'help': {
     title: 'Help Center',
@@ -39,29 +39,29 @@ const FALLBACK_CONTENT = {
   },
   'safety': {
     title: 'Safety Commitment',
-    content: `<h2>Your Safety Is Our Priority</h2><p>Every Apna Electro electrician carries valid ID and a skill certificate. They are background verified and trained in electrical safety standards.</p><h2>Tips for Customers</h2><ul><li>Always verify the electrician's ID when they arrive</li><li>Never attempt electrical work yourself</li><li>Turn off the main switch before any electrical work begins</li></ul>`,
+    content: `<h2>Your Safety Is Our Priority</h2><p>Every Apna Catalyst electrician carries valid ID and a skill certificate. They are background verified and trained in electrical safety standards.</p><h2>Tips for Customers</h2><ul><li>Always verify the electrician's ID when they arrive</li><li>Never attempt electrical work yourself</li><li>Turn off the main switch before any electrical work begins</li></ul>`,
   },
   'how-it-works': {
-    title: 'How Apna Electro Works',
+    title: 'How Apna Catalyst Works',
     content: `<h2>Simple, Fast, Reliable</h2><ol><li><strong>Describe your problem</strong> — tell us what needs fixing or installing.</li><li><strong>Choose an electrician</strong> — browse profiles, ratings, and availability.</li><li><strong>Book a slot</strong> — pick a date and time that works for you.</li><li><strong>Get it done</strong> — your verified electrician arrives on time.</li><li><strong>Pay securely</strong> — pay only after the job is complete.</li></ol>`,
   },
   'contact': {
     title: 'Contact Us',
-    content: `<h2>Get In Touch</h2><p>We are here to help. Reach us through any of the following channels:</p><ul><li>📧 Email: <a href="mailto:support@apnaelectro.com">support@apnaelectro.com</a></li><li>📞 Phone: 1800-XXX-XXXX (Toll Free, Mon–Sat 9am–7pm)</li><li>💬 WhatsApp: Available via the app</li></ul>`,
+    content: `<h2>Get In Touch</h2><p>We are here to help. Reach us through any of the following channels:</p><ul><li>📧 Email: <a href="mailto:support@apnacatalyst.com">support@apnacatalyst.com</a></li><li>📞 Phone: 1800-XXX-XXXX (Toll Free, Mon–Sat 9am–7pm)</li><li>💬 WhatsApp: Available via the app</li></ul>`,
   },
   'kitchen-electrical-hazards': {
     title: '5 Hidden Electrical Hazards in Modern Kitchens',
     coverImage: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80',
     tags: ['Safety', 'Kitchen', 'Home'],
-    author: 'Apna Electro Team',
+    author: 'Apna Catalyst Team',
     publishedAt: new Date(Date.now() - 86400000 * 3).toISOString(),
     readTime: 5,
     views: 1240,
     type: 'blog',
-    content: `<h2>1. Overloaded Outlets</h2><p>Modern kitchens are packed with power-hungry appliances—microwaves, air fryers, blenders, and coffee makers. Plugging too many into a single circuit can easily cause an overload, leading to tripped breakers or, worst-case, electrical fires. Always plug heavy appliances directly into wall outlets, never into extension cords.</p><h2>2. Water and Electricity Proximity</h2><p>The cardinal rule of electricity is to keep it away from water. Yet, countertops often feature outlets right next to sinks. Ensure you have GFCI (Ground Fault Circuit Interrupter) outlets installed anywhere water is present. These cut power instantly if water comes into contact.</p><h2>3. Damaged Appliance Cords</h2><p>Heat from stoves or accidental crimping from heavy appliances can damage the insulation on cords. Exposed wires are a massive shock hazard. Regularly inspect the cords of all your appliances.</p><h2>4. Faulty or Outdated Wiring</h2><p>Warning signs include flickering lights when you turn on the microwave or a slight burning smell near outlets.</p><h2>5. DIY Countertop Lighting</h2><p>Kitchens generate steam and heat, which can easily melt improper wiring. Always hire a professional for integrated lighting.</p><p><br/><strong>Need a kitchen inspection?</strong> Our verified electricians at Apna Electro can assess your setup. <strong>Book a visit today!</strong></p>`
+    content: `<h2>1. Overloaded Outlets</h2><p>Modern kitchens are packed with power-hungry appliances—microwaves, air fryers, blenders, and coffee makers. Plugging too many into a single circuit can easily cause an overload, leading to tripped breakers or, worst-case, electrical fires. Always plug heavy appliances directly into wall outlets, never into extension cords.</p><h2>2. Water and Electricity Proximity</h2><p>The cardinal rule of electricity is to keep it away from water. Yet, countertops often feature outlets right next to sinks. Ensure you have GFCI (Ground Fault Circuit Interrupter) outlets installed anywhere water is present. These cut power instantly if water comes into contact.</p><h2>3. Damaged Appliance Cords</h2><p>Heat from stoves or accidental crimping from heavy appliances can damage the insulation on cords. Exposed wires are a massive shock hazard. Regularly inspect the cords of all your appliances.</p><h2>4. Faulty or Outdated Wiring</h2><p>Warning signs include flickering lights when you turn on the microwave or a slight burning smell near outlets.</p><h2>5. DIY Countertop Lighting</h2><p>Kitchens generate steam and heat, which can easily melt improper wiring. Always hire a professional for integrated lighting.</p><p><br/><strong>Need a kitchen inspection?</strong> Our verified electricians at Apna Catalyst can assess your setup. <strong>Book a visit today!</strong></p>`
   },
   'revolutionizing-home-maintenance': {
-    title: 'How Apna Electro is Revolutionizing Home Maintenance in Delhi',
+    title: 'How Apna Catalyst is Revolutionizing Home Maintenance in Delhi',
     coverImage: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&q=80',
     tags: ['Brand Story', 'Community'],
     author: 'Ravi Sharma, Founder',
@@ -69,7 +69,7 @@ const FALLBACK_CONTENT = {
     readTime: 7,
     views: 3420,
     type: 'blog',
-    content: `<p>Delhi NCR is a bustling, fast-paced region. Yet, for decades, finding a reliable electrician has been an exercise in frustration. You ask neighbours for a number, wait hours for someone to show up, and often get overcharged with zero guarantee on the work. We decided it was time for a change.</p><h2>The Core Problem</h2><p>We realized that independent electricians were struggling to find consistent work and secure their payments, while customers were terrified of being scammed by untrained workers. The trust deficit was massive.</p><h2>Our Solution</h2><p>Apna Electro was built to bridge this gap. We developed a rigorous vetting process. Every electrician must pass a technical test, a background check, and a customer service orientation. On the flip side, we guarantee them fair wages and insurance coverage.</p><h2>The Impact So Far</h2><p>Wait times for electricians have dropped from an average of 4 hours to just 30 minutes. Most importantly, we've helped over 2,000 independent electricians triple their monthly income.</p><p>We are just getting started. The future of Indian home maintenance is transparent, digital, and deeply focused on quality.</p>`
+    content: `<p>Delhi NCR is a bustling, fast-paced region. Yet, for decades, finding a reliable electrician has been an exercise in frustration. You ask neighbours for a number, wait hours for someone to show up, and often get overcharged with zero guarantee on the work. We decided it was time for a change.</p><h2>The Core Problem</h2><p>We realized that independent electricians were struggling to find consistent work and secure their payments, while customers were terrified of being scammed by untrained workers. The trust deficit was massive.</p><h2>Our Solution</h2><p>Apna Catalyst was built to bridge this gap. We developed a rigorous vetting process. Every electrician must pass a technical test, a background check, and a customer service orientation. On the flip side, we guarantee them fair wages and insurance coverage.</p><h2>The Impact So Far</h2><p>Wait times for electricians have dropped from an average of 4 hours to just 30 minutes. Most importantly, we've helped over 2,000 independent electricians triple their monthly income.</p><p>We are just getting started. The future of Indian home maintenance is transparent, digital, and deeply focused on quality.</p>`
   },
   'smart-lighting-worth-upgrade': {
     title: 'Smart Lighting: Is it Worth the Upgrade in 2025?',
@@ -86,7 +86,7 @@ const FALLBACK_CONTENT = {
     title: 'MCB Keeps Tripping? Here\'s What It Means and What To Do',
     coverImage: 'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=800&q=80',
     tags: ['MCB', 'Safety', 'DIY Guide'],
-    author: 'Apna Electro Team',
+    author: 'Apna Catalyst Team',
     publishedAt: new Date(Date.now() - 86400000 * 21).toISOString(),
     readTime: 4,
     views: 2100,
@@ -222,7 +222,7 @@ export default function ContentPage() {
                 <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary-500 to-electric-500 flex items-center justify-center text-white text-xs font-bold">
                   {(page.author || 'A').charAt(0)}
                 </div>
-                <span>{page.author || 'Apna Electro Team'}</span>
+                <span>{page.author || 'Apna Catalyst Team'}</span>
               </div>
               {page.publishedAt && (
                 <div className="flex items-center gap-1.5">

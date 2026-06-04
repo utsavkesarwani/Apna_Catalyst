@@ -40,7 +40,7 @@ const pageSchema = new mongoose.Schema({
   }],
   author: {
     type: String,
-    default: 'Apna Electro Team',
+    default: 'Apna Catalyst Team',
   },
   publishedAt: {
     type: Date,

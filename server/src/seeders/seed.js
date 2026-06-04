@@ -29,7 +29,7 @@ const services = [
 const electricians = [
   {
     name: 'Rajesh Kumar',
-    email: 'rajesh@apnaelectro.com',
+    email: 'rajesh@apnacatalyst.com',
     mobile: '9876543210',
     passwordHash: 'password123',
     location: { city: 'Delhi', state: 'Delhi', country: 'India', pincode: '110001' },
@@ -47,7 +47,7 @@ const electricians = [
   },
   {
     name: 'Amit Sharma',
-    email: 'amit@apnaelectro.com',
+    email: 'amit@apnacatalyst.com',
     mobile: '9876543211',
     passwordHash: 'password123',
     location: { city: 'Mumbai', state: 'Maharashtra', country: 'India', pincode: '400001' },
@@ -65,7 +65,7 @@ const electricians = [
   },
   {
     name: 'Suresh Yadav',
-    email: 'suresh@apnaelectro.com',
+    email: 'suresh@apnacatalyst.com',
     mobile: '9876543212',
     passwordHash: 'password123',
     location: { city: 'Delhi', state: 'Delhi', country: 'India', pincode: '110002' },
@@ -83,7 +83,7 @@ const electricians = [
   },
   {
     name: 'Vikram Singh',
-    email: 'vikram@apnaelectro.com',
+    email: 'vikram@apnacatalyst.com',
     mobile: '9876543213',
     passwordHash: 'password123',
     location: { city: 'Bangalore', state: 'Karnataka', country: 'India', pincode: '560001' },
@@ -101,7 +101,7 @@ const electricians = [
   },
   {
     name: 'Manoj Patel',
-    email: 'manoj@apnaelectro.com',
+    email: 'manoj@apnacatalyst.com',
     mobile: '9876543214',
     passwordHash: 'password123',
     location: { city: 'Delhi', state: 'Delhi', country: 'India', pincode: '110001' },
@@ -119,7 +119,7 @@ const electricians = [
   },
   {
     name: 'Deepak Gupta',
-    email: 'deepak@apnaelectro.com',
+    email: 'deepak@apnacatalyst.com',
     mobile: '9876543215',
     passwordHash: 'password123',
     location: { city: 'Noida', state: 'Uttar Pradesh', country: 'India', pincode: '201301' },
@@ -137,7 +137,7 @@ const electricians = [
   },
   {
     name: 'Prashant Mishra',
-    email: 'prashant@apnaelectro.com',
+    email: 'prashant@apnacatalyst.com',
     mobile: '9876543216',
     passwordHash: 'password123',
     location: { city: 'Jaipur', state: 'Rajasthan', country: 'India', pincode: '302001' },
@@ -155,7 +155,7 @@ const electricians = [
   },
   {
     name: 'Rohit Verma',
-    email: 'rohit@apnaelectro.com',
+    email: 'rohit@apnacatalyst.com',
     mobile: '9876543217',
     passwordHash: 'password123',
     location: { city: 'Delhi', state: 'Delhi', country: 'India', pincode: '110005' },
@@ -192,7 +192,7 @@ const users = [
   },
   {
     name: 'Admin User',
-    email: 'admin@apnaelectro.com',
+    email: 'admin@apnacatalyst.com',
     mobile: '9000000001',
     passwordHash: 'admin123',
     role: 'superadmin',
@@ -201,20 +201,20 @@ const users = [
 ]
 
 const siteConfigs = [
-  { key: 'site_name', value: 'Apna Electro', type: 'string', group: 'general', label: 'Site Name' },
+  { key: 'site_name', value: 'Apna Catalyst', type: 'string', group: 'general', label: 'Site Name' },
   { key: 'site_tagline', value: 'Expert Electricians at Your Doorstep', type: 'string', group: 'general', label: 'Tagline' },
-  { key: 'contact_email', value: 'support@apnaelectro.com', type: 'string', group: 'contact', label: 'Contact Email' },
+  { key: 'contact_email', value: 'support@apnacatalyst.com', type: 'string', group: 'contact', label: 'Contact Email' },
   { key: 'contact_phone', value: '+91 98765 43210', type: 'string', group: 'contact', label: 'Contact Phone' },
   { key: 'hero_headline', value: 'Expert Electricians at Your Doorstep', type: 'string', group: 'hero', label: 'Hero Headline' },
   { key: 'hero_subheadline', value: 'Book verified, background-checked electricians for any job — from a simple switch fix to complete home wiring. Fast, safe, and guaranteed.', type: 'string', group: 'hero', label: 'Hero Sub-headline' },
   { key: 'hero_cta_primary', value: 'Book Now', type: 'string', group: 'hero', label: 'Primary CTA' },
   { key: 'hero_cta_secondary', value: 'Explore Services', type: 'string', group: 'hero', label: 'Secondary CTA' },
-  { key: 'meta_title', value: 'Apna Electro — Expert Electricians at Your Doorstep', type: 'string', group: 'seo', label: 'Meta Title' },
+  { key: 'meta_title', value: 'Apna Catalyst — Expert Electricians at Your Doorstep', type: 'string', group: 'seo', label: 'Meta Title' },
   { key: 'meta_description', value: 'Book verified electricians for wiring, fan installation, AC repair, CCTV setup and more. Fast, safe, and guaranteed service across India.', type: 'string', group: 'seo', label: 'Meta Description' },
   { key: 'platform_fee', value: 49, type: 'number', group: 'payment', label: 'Platform Fee (₹)' },
-  { key: 'social_facebook', value: 'https://facebook.com/apnaelectro', type: 'string', group: 'social', label: 'Facebook URL' },
-  { key: 'social_instagram', value: 'https://instagram.com/apnaelectro', type: 'string', group: 'social', label: 'Instagram URL' },
-  { key: 'social_twitter', value: 'https://twitter.com/apnaelectro', type: 'string', group: 'social', label: 'Twitter URL' },
+  { key: 'social_facebook', value: 'https://facebook.com/apnacatalyst', type: 'string', group: 'social', label: 'Facebook URL' },
+  { key: 'social_instagram', value: 'https://instagram.com/apnacatalyst', type: 'string', group: 'social', label: 'Instagram URL' },
+  { key: 'social_twitter', value: 'https://twitter.com/apnacatalyst', type: 'string', group: 'social', label: 'Twitter URL' },
 ]
 
 // ════════════════════════════════════════════════
@@ -278,8 +278,8 @@ const seedDB = async () => {
   🔑 Test Credentials:
   ─────────────────────────────────
   User:        arjun@example.com / password123
-  Electrician: rajesh@apnaelectro.com / password123
-  Admin:       admin@apnaelectro.com / admin123
+  Electrician: rajesh@apnacatalyst.com / password123
+  Admin:       admin@apnacatalyst.com / admin123
   OTP (mock):  123456
   Coupons:     FIRST100, APNA100
     `)

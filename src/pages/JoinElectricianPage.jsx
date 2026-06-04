@@ -349,7 +349,7 @@ export default function JoinElectricianPage() {
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             <h1 className="text-2xl md:text-3xl font-display font-bold text-white mb-3">Application Submitted!</h1>
-            <p className="text-surface-400 mb-2">Thank you for joining Apna Electro.</p>
+            <p className="text-surface-400 mb-2">Thank you for joining Apna Catalyst.</p>
             <p className="text-surface-500 text-sm">
               Our team will review your application and get back to you within 24–48 hours.
             </p>

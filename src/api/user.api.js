@@ -38,6 +38,15 @@ export const updatePassword = (data) =>
 export const getUserBookings = () =>
   apiClient.get('/users/bookings')
 
+export const addUserAddress = (data) =>
+  apiClient.post('/users/addresses', data)
+
+export const updateUserAddress = (id, data) =>
+  apiClient.put(`/users/addresses/${id}`, data)
+
+export const deleteUserAddress = (id) =>
+  apiClient.delete(`/users/addresses/${id}`)
+
 // ═══════════════════════════════════════════
 // Electrician Discovery APIs (Public)
 // ═══════════════════════════════════════════
@@ -61,6 +70,8 @@ export const getServices = () =>
 export const getServiceBySlug = (slug) =>
   apiClient.get(`/services/${slug}`)
 
+export const getSubcategoriesByService = (serviceId) =>
+  apiClient.get(`/services/${serviceId}/subcategories`)
 // ═══════════════════════════════════════════
 // Booking APIs (User Side)
 // ═══════════════════════════════════════════

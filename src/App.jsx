@@ -14,10 +14,13 @@ import AuthPage from './pages/AuthPage'
 import GoogleAuthCallback from './pages/GoogleAuthCallback'
 import UserProfilePage from './pages/UserProfilePage'
 import ServicesPage from './pages/ServicesPage'
+import ServiceDetailPage from './pages/ServiceDetailPage'
 import ContentPage from './pages/ContentPage'
 import BlogPage from './pages/BlogPage'
 import ScrollToTop from './components/layout/ScrollToTop'
 import UserProtectedRoute from './components/UserProtectedRoute'
+import OnboardingRoute from './components/OnboardingRoute'
+import OnboardingPage from './pages/OnboardingPage'
 
 // Electrician Panel (Phase 3 + Phase 4 integration)
 import ElectricianLayout from './components/electrician-panel/ElectricianLayout'
@@ -49,7 +52,7 @@ function App() {
 
   // Dynamically set page title & meta description from CMS config
   useEffect(() => {
-    document.title = config.meta_title || config.site_name || 'Apna Electro'
+    document.title = config.meta_title || config.site_name || 'Apna Catalyst'
     const metaDesc = document.querySelector('meta[name="description"]')
     if (metaDesc) {
       metaDesc.setAttribute('content', config.meta_description || '')
@@ -82,6 +85,13 @@ function App() {
           <Footer />
         </div>
       } />
+      <Route path="/services/:slug" element={
+        <div className="min-h-screen bg-surface-950 flex flex-col">
+          <Navbar />
+          <main className="flex-1"><ServiceDetailPage /></main>
+          <Footer />
+        </div>
+      } />
       <Route path="/electricians" element={
         <div className="min-h-screen bg-surface-950 flex flex-col">
           <Navbar />
@@ -106,21 +116,33 @@ function App() {
       <Route path="/booking" element={
         <div className="min-h-screen bg-surface-950 flex flex-col">
           <Navbar />
-          <main className="flex-1"><BookingPage /></main>
+          <main className="flex-1">
+            <OnboardingRoute>
+              <BookingPage />
+            </OnboardingRoute>
+          </main>
           <Footer />
         </div>
       } />
       <Route path="/booking/:id" element={
         <div className="min-h-screen bg-surface-950 flex flex-col">
           <Navbar />
-          <main className="flex-1"><BookingPage /></main>
+          <main className="flex-1">
+            <OnboardingRoute>
+              <BookingPage />
+            </OnboardingRoute>
+          </main>
           <Footer />
         </div>
       } />
       <Route path="/checkout" element={
         <div className="min-h-screen bg-surface-950 flex flex-col">
           <Navbar />
-          <main className="flex-1"><CheckoutPage /></main>
+          <main className="flex-1">
+            <OnboardingRoute>
+              <CheckoutPage />
+            </OnboardingRoute>
+          </main>
           <Footer />
         </div>
       } />
@@ -148,12 +170,27 @@ function App() {
 
       {/* Google OAuth callback — full-screen redirect handler, no chrome */}
       <Route path="/auth/google/success" element={<GoogleAuthCallback />} />
+
+      {/* Onboarding — mandatory profile completion for new users */}
+      <Route path="/onboarding" element={
+        <div className="min-h-screen bg-surface-950 flex flex-col">
+          <Navbar />
+          <main className="flex-1">
+            <UserProtectedRoute>
+              <OnboardingPage />
+            </UserProtectedRoute>
+          </main>
+        </div>
+      } />
+
       <Route path="/profile" element={
         <div className="min-h-screen bg-surface-950 flex flex-col">
           <Navbar />
           <main className="flex-1">
             <UserProtectedRoute>
-              <UserProfilePage />
+              <OnboardingRoute>
+                <UserProfilePage />
+              </OnboardingRoute>
             </UserProtectedRoute>
           </main>
           <Footer />

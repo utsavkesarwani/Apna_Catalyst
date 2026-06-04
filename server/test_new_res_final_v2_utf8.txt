@@ -15,7 +15,7 @@ VERIFY OTP 2: {
   user: {
     id: '69d9c8d995816152fb0e6f84',
     name: 'New User',
-    email: '8888888888@apnaelectro.com',
+    email: '8888888888@apnacatalyst.com',
     mobile: '8888888888',
     role: 'user',
     location: {

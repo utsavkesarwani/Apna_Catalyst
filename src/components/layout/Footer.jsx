@@ -4,12 +4,12 @@ import { useSiteConfig } from '../../context/SiteConfigContext.jsx'
 
 const footerLinks = {
   Services: [
-    { name: 'Wiring & Rewiring', path: '/electricians?service=wiring' },
-    { name: 'Fan Installation', path: '/electricians?service=fan-installation' },
-    { name: 'AC Wiring', path: '/electricians?service=ac-wiring' },
-    { name: 'CCTV Installation', path: '/electricians?service=cctv' },
-    { name: 'Smart Home Setup', path: '/electricians?service=smart-home' },
-    { name: 'Full Home Wiring', path: '/home-wiring' },
+    { name: 'Wiring & Rewiring', path: '/electricians?service=wiring', isActive: true },
+    { name: 'Fan Installation', path: '/electricians?service=fan-installation', isActive: true },
+    { name: 'AC Wiring', path: '/electricians?service=ac-wiring', isActive: true },
+    { name: 'CCTV Installation', path: '/electricians?service=cctv', isActive: false },
+    { name: 'Smart Home Setup', path: '/electricians?service=smart-home', isActive: false },
+    { name: 'Full Home Wiring', path: '/home-wiring', isActive: true },
   ],
   Company: [
     { name: 'About Us', path: '/page/about' },
@@ -37,9 +37,9 @@ const socialLinks = [
 export default function Footer() {
   const { config } = useSiteConfig()
 
-  const siteName = config.site_name || 'Apna Electro'
+  const siteName = config.site_name || 'Apna Catalyst'
   const nameParts = siteName.includes(' ') ? [siteName.split(' ')[0], siteName.split(' ').slice(1).join(' ')] : [siteName, '']
-  const contactEmail = config.contact_email || 'support@apnaelectro.com'
+  const contactEmail = config.contact_email || 'support@apnacatalyst.com'
   const contactPhone = config.contact_phone || '1800-XXX-XXXX (Toll Free)'
   const contactAddress = config.contact_address || 'Available across all major cities in India'
   const siteDescription = config.site_description || "India's most trusted platform for electrical services. Verified professionals, transparent pricing, and guaranteed satisfaction."
@@ -70,7 +70,7 @@ export default function Footer() {
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-2 mb-4 group">
               <div className="w-16 h-16 rounded-lg overflow-hidden flex items-center justify-center p-0.5">
-                <img src="/apna_electro_logo.png" alt="Logo" className="w-full h-full object-contain" />
+                <img src="/apna_catalyst_logo.png" alt="Logo" className="w-full h-full object-contain" />
               </div>
               <span className="text-xl font-display font-bold">
                 <span className="text-white">{nameParts[0]}</span>
@@ -103,12 +103,32 @@ export default function Footer() {
               <ul className="space-y-2.5">
                 {links.map((link) => (
                   <li key={link.name}>
-                    <Link
-                      to={link.path}
-                      className="text-sm text-surface-400 hover:text-primary-400 transition-colors duration-300"
-                    >
-                      {link.name}
-                    </Link>
+                    {link.isActive === false ? (
+                      <div className="relative group w-fit flex items-center gap-2">
+                        <span className="text-sm text-surface-500 cursor-not-allowed transition-colors duration-300">
+                          {link.name}
+                        </span>
+                        <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 bg-primary-500/10 text-primary-400 rounded-md whitespace-nowrap">
+                          Soon
+                        </span>
+                        
+                        {/* Tooltip */}
+                        <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-52 p-3 bg-surface-900 border border-surface-700/50 rounded-xl shadow-xl z-50">
+                          <p className="text-xs text-surface-300 leading-relaxed">
+                            We are onboarding top-tier certified technicians for this service. Launching soon!
+                          </p>
+                          {/* Triangle pointer */}
+                          <div className="absolute left-4 -bottom-1.5 w-3 h-3 bg-surface-900 border-b border-r border-surface-700/50 transform rotate-45"></div>
+                        </div>
+                      </div>
+                    ) : (
+                      <Link
+                        to={link.path}
+                        className="text-sm text-surface-400 hover:text-primary-400 transition-colors duration-300"
+                      >
+                        {link.name}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>

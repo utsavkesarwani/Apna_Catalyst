@@ -52,7 +52,7 @@ export default function ServicesPage() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center max-w-3xl mx-auto"
           >
-            <span className="badge-electric text-xs mb-4 inline-block">Apna Electro Solutions</span>
+            <span className="badge-electric text-xs mb-4 inline-block">Apna Catalyst Solutions</span>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-6">
               Professional <span className="gradient-text">Electrical Services</span>
             </h1>
@@ -99,7 +99,7 @@ export default function ServicesPage() {
                         transition={{ delay: index * 0.05 }}
                       >
                         <Link
-                          to={`/electricians?service=${service.slug}`}
+                          to={`/services/${service.slug}`}
                           className="glass-card group p-8 h-full flex flex-col hover:border-primary-500/30 transition-all duration-500"
                         >
                           <div className="flex justify-between items-start mb-6">

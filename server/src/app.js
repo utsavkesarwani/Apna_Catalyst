@@ -26,6 +26,7 @@ import superadminRoutes from './routes/superadmin.routes.js'
 import pageRoutes from './routes/page.routes.js'
 import locationRoutes from './routes/location.routes.js'
 import skillRequestRoutes from './routes/skillRequest.routes.js'
+import subcategoryRoutes from './routes/subcategory.routes.js'
 
 // Middleware imports
 import { errorHandler, notFound } from './middleware/errorHandler.js'
@@ -120,7 +121,7 @@ app.get('/', (req, res) => {
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
-    message: 'Apna Electro API is running ⚡',
+    message: 'Apna Catalyst API is running ⚡',
     environment: process.env.NODE_ENV,
     timestamp: new Date().toISOString(),
   })
@@ -142,6 +143,7 @@ app.use('/api/superadmin', superadminRoutes)
 app.use('/api/pages', pageRoutes)
 app.use('/api/locations', locationRoutes)
 app.use('/api/skill-requests', skillRequestRoutes)
+app.use('/api', subcategoryRoutes)
 
 // ---------------------
 // Error Handling

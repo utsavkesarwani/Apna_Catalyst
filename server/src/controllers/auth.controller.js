@@ -50,7 +50,7 @@ export const login = async (req, res, next) => {
     }
 
     // Find user with password field
-    const user = await User.findOne({ email }).select('+passwordHash')
+    const user = await User.findOne({ email }).select('+passwordHash').populate('addresses')
     if (!user) {
       throw ApiError.unauthorized('Invalid email or password')
     }
@@ -129,7 +129,7 @@ export const verifyOTPHandler = async (req, res, next) => {
       throw ApiError.badRequest('Mobile number and OTP are required')
     }
 
-    const user = await User.findOne({ mobile }).select('+otp')
+    const user = await User.findOne({ mobile }).select('+otp').populate('addresses')
     
     let isValid
     if (user && user.otp) {
@@ -165,7 +165,7 @@ export const verifyOTPHandler = async (req, res, next) => {
     const newUser = await User.create({
       name,
       mobile,
-      email: `${mobile}@apnaelectro.com`, // Temp email, user should update
+      email: `${mobile}@apnacatalyst.com`, // Temp email, user should update
       passwordHash: `otp_${Date.now()}`, // Placeholder, OTP-only users
     })
 
@@ -186,7 +186,7 @@ export const getMe = async (req, res, next) => {
     if (req.user.role === 'electrician') {
       user = await Electrician.findById(req.user._id)
     } else {
-      user = await User.findById(req.user._id)
+      user = await User.findById(req.user._id).populate('addresses')
     }
 
     if (!user) {

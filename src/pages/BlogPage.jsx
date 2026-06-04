@@ -12,7 +12,7 @@ const FALLBACK_POSTS = [
     excerpt: 'Your kitchen could be a hidden electrical danger zone. Learn about the 5 most common hazards that even new homes face and how a professional inspection can protect your family.',
     coverImage: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80',
     tags: ['Safety', 'Kitchen', 'Home'],
-    author: 'Apna Electro Team',
+    author: 'Apna Catalyst Team',
     publishedAt: new Date(Date.now() - 86400000 * 3).toISOString(),
     readTime: 5,
     views: 1240,
@@ -20,7 +20,7 @@ const FALLBACK_POSTS = [
   {
     _id: '2',
     slug: 'revolutionizing-home-maintenance',
-    title: 'How Apna Electro is Revolutionizing Home Maintenance in Delhi',
+    title: 'How Apna Catalyst is Revolutionizing Home Maintenance in Delhi',
     excerpt: 'From a small startup idea to serving 10,000+ families across Delhi NCR — here\'s the story of how we\'re changing the way Indians get their electrical work done.',
     coverImage: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=800&q=80',
     tags: ['Brand Story', 'Community'],
@@ -48,7 +48,7 @@ const FALLBACK_POSTS = [
     excerpt: 'A tripping MCB is never just an inconvenience — it\'s your home\'s warning system. Learn to decode what each type of trip means and when to call a professional immediately.',
     coverImage: 'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?w=800&q=80',
     tags: ['MCB', 'Safety', 'DIY Guide'],
-    author: 'Apna Electro Team',
+    author: 'Apna Catalyst Team',
     publishedAt: new Date(Date.now() - 86400000 * 21).toISOString(),
     readTime: 4,
     views: 2100,
@@ -161,7 +161,7 @@ export default function BlogPage() {
         <div className="section-container pt-16 pb-10">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-primary-500/10 text-primary-400 border border-primary-500/20 mb-4">
-              <Zap size={12} /> Apna Electro Blog
+              <Zap size={12} /> Apna Catalyst Blog
             </span>
             <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-3">
               Electrical Tips &amp; <span className="gradient-text">Insights</span>

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Home, CheckCircle, ArrowRight, Star, Shield, Zap, Phone } from 'lucide-react'
@@ -14,6 +15,7 @@ const beforeAfter = [
 ]
 
 export default function HomeWiringPage() {
+  const [isComingSoonOpen, setIsComingSoonOpen] = useState(false)
   const wiringExperts = electricians.filter(e => e.services.includes('full-home-wiring')).slice(0, 4)
 
   return (
@@ -41,9 +43,9 @@ export default function HomeWiringPage() {
             Complete electrical solutions for new construction and renovation. From wiring to switches, we handle everything.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/booking">
+            <div onClick={(e) => { e.preventDefault(); setIsComingSoonOpen(true); }} className="cursor-pointer">
               <Button variant="primary" size="lg" icon={Zap}>Get Free Quote</Button>
-            </Link>
+            </div>
             <Button variant="secondary" size="lg" icon={Phone}>Call Now</Button>
           </div>
         </div>
@@ -132,7 +134,7 @@ export default function HomeWiringPage() {
                     </li>
                   ))}
                 </ul>
-                <Link to="/booking" className="block">
+                <div onClick={(e) => { e.preventDefault(); setIsComingSoonOpen(true); }} className="block cursor-pointer">
                   <Button
                     variant={pkg.popular ? 'primary' : 'secondary'}
                     size="md"
@@ -140,7 +142,7 @@ export default function HomeWiringPage() {
                   >
                     Get Started
                   </Button>
-                </Link>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -187,7 +189,11 @@ export default function HomeWiringPage() {
             {wiringExperts.map(elec => {
               const initials = elec.name.split(' ').map(n => n[0]).join('')
               return (
-                <Link key={elec.id} to={`/electricians/${elec.id}`} className="block">
+                <div 
+                  key={elec.id} 
+                  className="block cursor-pointer"
+                  onClick={(e) => { e.preventDefault(); setIsComingSoonOpen(true); }}
+                >
                   <div className="glass-card p-5 text-center group hover:border-primary-500/30 transition-all duration-500">
                     <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500/30 to-electric-500/20 flex items-center justify-center mx-auto mb-3 border border-primary-500/20">
                       <span className="text-xl font-display font-bold text-primary-300">{initials}</span>
@@ -199,12 +205,36 @@ export default function HomeWiringPage() {
                     <p className="text-xs text-surface-500">{elec.experience} years experience</p>
                     <p className="text-xs text-surface-500">{elec.completedJobs}+ jobs done</p>
                   </div>
-                </Link>
+                </div>
               )
             })}
           </div>
         </motion.div>
       </div>
+
+      {/* Coming Soon Modal */}
+      {isComingSoonOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            className="bg-surface-900 border border-surface-700 p-6 md:p-8 rounded-2xl max-w-md w-full shadow-2xl relative"
+          >
+            <h3 className="text-xl font-display font-bold text-white mb-3">Service Coming Soon</h3>
+            <p className="text-surface-300 mb-6 text-sm leading-relaxed">
+              We are onboarding premium certified technician teams for full-house wiring and large-scale renovations. This premium service will be launching soon!
+            </p>
+            <div className="flex justify-end">
+              <Button 
+                variant="primary" 
+                onClick={() => setIsComingSoonOpen(false)}
+              >
+                Got It
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </section>
   )
 }

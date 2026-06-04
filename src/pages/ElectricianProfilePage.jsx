@@ -77,7 +77,7 @@ export default function ElectricianProfilePage() {
         // Force-merge data if viewing the demo electrician, regardless of whether data came from API or Mock
         if (finalElec && (finalElec.id === 1 || finalElec.id === 'demo_elec_001' || id === 'demo_elec_001' || id === '1' || String(finalElec.name).includes('Rajesh'))) {
            try {
-             const localUserStr = localStorage.getItem('apna_electro_user')
+             const localUserStr = localStorage.getItem('apna_catalyst_user')
              if (localUserStr) {
                const localUser = JSON.parse(localUserStr)
                if (localUser && localUser._id === 'demo_elec_001') {

@@ -1,9 +1,9 @@
 {
-  "name": "apna-electro-server",
+  "name": "apna-catalyst-server",
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Apna Electro — Backend API Server",
+  "description": "Apna Catalyst — Backend API Server",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
@@ -11,7 +11,7 @@
     "seed": "node src/seeders/seed.js"
   },
   "dependencies": {
-    "apna-electro": "file:..",
+    "apna-catalyst": "file:..",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
     "cookie-session": "^2.1.1",

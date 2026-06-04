@@ -21,7 +21,7 @@ const createOAuthCallback = (provider) => (req, res) => {
 
     // Set JWT in httpOnly cookie (secure in production)
     const isProduction = process.env.NODE_ENV === 'production'
-    res.cookie('apna_electro_token', token, {
+    res.cookie('apna_catalyst_token', token, {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'strict' : 'lax',
@@ -40,6 +40,8 @@ const createOAuthCallback = (provider) => (req, res) => {
       role: user.role || 'user',
       avatar: user.avatar || '',
       authMethod: user.authMethod || provider,
+      location: user.location || {},
+      detailedAddress: user.detailedAddress || {},
     }))
 
     res.redirect(redirectUrl.toString())

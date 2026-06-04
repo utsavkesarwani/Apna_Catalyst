@@ -82,6 +82,22 @@ export const toggleServiceStatus = (id) =>
 export const reorderServices = (orderedIds) =>
   api.put('/services/reorder', { orderedIds })
 
+// ─── Subcategory Management ─────────────────────
+export const getSubcategoriesAdmin = (serviceId) =>
+  api.get(`/services/${serviceId}/subcategories/all`)
+
+export const createSubcategory = (serviceId, data) =>
+  api.post(`/services/${serviceId}/subcategories`, data)
+
+export const updateSubcategory = (id, data) =>
+  api.put(`/subcategories/${id}`, data)
+
+export const toggleSubcategoryStatus = (id) =>
+  api.patch(`/subcategories/${id}/toggle`)
+
+export const deleteSubcategory = (id) =>
+  api.delete(`/subcategories/${id}`)
+
 // ─── Location / Service Area Management ─────────
 export const getActiveLocations = () =>
   api.get('/locations/active')

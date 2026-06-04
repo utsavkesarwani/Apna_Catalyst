@@ -4,10 +4,10 @@ import { getPublicConfig } from '../api/admin.api.js'
 const SiteConfigContext = createContext(null)
 
 const defaultConfig = {
-  site_name: 'Apna Electro',
+  site_name: 'Apna Catalyst',
   site_tagline: 'Expert Electricians at Your Doorstep',
   site_description: "India's #1 platform for trusted, verified electrical service professionals.",
-  contact_email: 'support@apnaelectro.com',
+  contact_email: 'support@apnacatalyst.com',
   contact_phone: '+91 98765 43210',
   contact_address: 'New Delhi, India',
   hero_headline: 'Expert Electricians at Your Doorstep',
@@ -17,7 +17,7 @@ const defaultConfig = {
   hero_bg_image: '',
   banner_text: '🎉 Get 20% off on your first booking! Use code FIRST20',
   banner_active: 'true',
-  meta_title: 'Apna Electro — Trusted Electrical Services',
+  meta_title: 'Apna Catalyst — Trusted Electrical Services',
   meta_description: 'Book trusted, verified electricians for all your electrical needs. Fast service, fair prices.',
 }
 

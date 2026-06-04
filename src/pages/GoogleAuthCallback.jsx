@@ -3,17 +3,18 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Zap, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+import { getMe } from '../api/user.api'
 
 /**
  * GoogleAuthCallback
  * Landing page after Google OAuth redirect from the server.
  * Extracts the JWT token + user from URL params, stores in context/localStorage,
- * then redirects to the dashboard.
+ * fetches the full profile, then redirects based on onboarding status.
  */
 export default function GoogleAuthCallback() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
-  const { setGoogleUser } = useAuth()
+  const { setGoogleUser, updateUser } = useAuth()
   const [status, setStatus] = useState('processing') // processing | success | error
   const [errorMsg, setErrorMsg] = useState('')
 
@@ -46,8 +47,8 @@ export default function GoogleAuthCallback() {
       const user = JSON.parse(decodeURIComponent(userParam))
 
       // Store in localStorage (matches existing auth flow)
-      localStorage.setItem('apna_electro_token', token)
-      localStorage.setItem('apna_electro_user', JSON.stringify(user))
+      localStorage.setItem('apna_catalyst_token', token)
+      localStorage.setItem('apna_catalyst_user', JSON.stringify(user))
 
       // Update AuthContext state
       setGoogleUser(token, user)
@@ -57,10 +58,24 @@ export default function GoogleAuthCallback() {
       // Clear sensitive data from URL immediately
       window.history.replaceState({}, document.title, '/auth/google/success')
 
-      // Redirect to dashboard after brief success flash
-      setTimeout(() => {
-        navigate('/profile', { replace: true })
-      }, 1200)
+      // Fetch full profile to get detailedAddress and check onboarding
+      getMe()
+        .then((response) => {
+          const fullUser = { ...response.user, role: response.user.role || 'user' }
+          // Update context + localStorage with full user data
+          updateUser(fullUser)
+          localStorage.setItem('apna_catalyst_user', JSON.stringify(fullUser))
+
+          // Check if onboarding is needed
+          const needsOnboarding = !fullUser.mobile || (!fullUser.addresses?.length && !fullUser.detailedAddress?.flatNo)
+          const destination = needsOnboarding ? '/onboarding' : '/services'
+
+          setTimeout(() => navigate(destination, { replace: true }), 1200)
+        })
+        .catch(() => {
+          // If profile fetch fails, still redirect — onboarding guard will catch it
+          setTimeout(() => navigate('/onboarding', { replace: true }), 1200)
+        })
     } catch (err) {
       setErrorMsg('Failed to process authentication data.')
       setStatus('error')

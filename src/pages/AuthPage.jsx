@@ -7,6 +7,9 @@ import Button from '../components/ui/Button'
 import GoogleSignInButton from '../components/ui/GoogleSignInButton'
 import FacebookSignInButton from '../components/ui/FacebookSignInButton'
 
+// ── Feature Flag: set to true to re-enable Mobile OTP login ──
+const ENABLE_MOBILE_OTP = false
+
 export default function AuthPage() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -15,7 +18,7 @@ export default function AuthPage() {
   const returnTo = location.state?.from || '/'
 
   const [mode, setMode] = useState('login') // login | register | otp | otp-name
-  const [method, setMethod] = useState('mobile') // mobile | email
+  const [method, setMethod] = useState(ENABLE_MOBILE_OTP ? 'mobile' : 'email') // mobile | email
   const [form, setForm] = useState({ mobile: '', email: '', password: '', name: '', otp: '' })
   const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', ''])
   const [successMsg, setSuccessMsg] = useState('')
@@ -289,31 +292,33 @@ export default function AuthPage() {
                 onSubmit={handleSubmit}
                 className="space-y-5"
               >
-                {/* Method Tabs */}
-                <div className="flex rounded-xl bg-surface-800/50 p-1">
-                  <button
-                    type="button"
-                    onClick={() => { setMethod('mobile'); setError(null) }}
-                    className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2 ${
-                      method === 'mobile'
-                        ? 'bg-primary-500/15 text-primary-400 border border-primary-500/20'
-                        : 'text-surface-400 hover:text-surface-200'
-                    }`}
-                  >
-                    <Phone size={14} /> Mobile OTP
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => { setMethod('email'); setError(null) }}
-                    className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2 ${
-                      method === 'email'
-                        ? 'bg-primary-500/15 text-primary-400 border border-primary-500/20'
-                        : 'text-surface-400 hover:text-surface-200'
-                    }`}
-                  >
-                    <Mail size={14} /> Email
-                  </button>
-                </div>
+                {/* Method Tabs — hidden when Mobile OTP is disabled */}
+                {ENABLE_MOBILE_OTP && (
+                  <div className="flex rounded-xl bg-surface-800/50 p-1">
+                    <button
+                      type="button"
+                      onClick={() => { setMethod('mobile'); setError(null) }}
+                      className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2 ${
+                        method === 'mobile'
+                          ? 'bg-primary-500/15 text-primary-400 border border-primary-500/20'
+                          : 'text-surface-400 hover:text-surface-200'
+                      }`}
+                    >
+                      <Phone size={14} /> Mobile OTP
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { setMethod('email'); setError(null) }}
+                      className={`flex-1 py-2.5 text-sm font-medium rounded-lg transition-all flex items-center justify-center gap-2 ${
+                        method === 'email'
+                          ? 'bg-primary-500/15 text-primary-400 border border-primary-500/20'
+                          : 'text-surface-400 hover:text-surface-200'
+                      }`}
+                    >
+                      <Mail size={14} /> Email
+                    </button>
+                  </div>
+                )}
 
                 {/* Register: Name */}
                 {mode === 'register' && (
@@ -331,7 +336,7 @@ export default function AuthPage() {
                 )}
 
                 {/* Mobile / Email */}
-                {method === 'mobile' ? (
+                {ENABLE_MOBILE_OTP && method === 'mobile' ? (
                   <div>
                     <label className="text-sm font-medium text-surface-300 mb-2 block">Mobile Number</label>
                     <div className="relative">
@@ -395,7 +400,7 @@ export default function AuthPage() {
                 >
                   {loading
                     ? 'Please wait...'
-                    : method === 'mobile'
+                    : ENABLE_MOBILE_OTP && method === 'mobile'
                     ? 'Send OTP'
                     : mode === 'register'
                     ? 'Create Account'

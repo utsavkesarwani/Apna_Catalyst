@@ -11,6 +11,7 @@ export const getServices = async (req, res, next) => {
     const services = await Service.find({ isActive: true })
       .sort({ order: 1 })
       .populate('subCategories')
+      .populate({ path: 'subcategories', match: { isActive: true }, options: { sort: { order: 1 } } })
 
     res.json({ success: true, count: services.length, services })
   } catch (error) {
@@ -28,6 +29,7 @@ export const getAllServicesAdmin = async (req, res, next) => {
     const services = await Service.find()
       .sort({ order: 1 })
       .populate('subCategories')
+      .populate({ path: 'subcategories', options: { sort: { order: 1 } } })
 
     res.json({ success: true, count: services.length, services })
   } catch (error) {
@@ -67,6 +69,7 @@ export const getServiceBySlug = async (req, res, next) => {
   try {
     const service = await Service.findOne({ slug: req.params.slug, isActive: true })
       .populate('subCategories')
+      .populate({ path: 'subcategories', match: { isActive: true }, options: { sort: { order: 1 } } })
 
     if (!service) throw ApiError.notFound('Service not found')
 

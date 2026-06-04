@@ -1,4 +1,4 @@
-# ⚡ Apna Electro — Full Development Roadmap
+# ⚡ Apna Catalyst — Full Development Roadmap
 
 > **Tech Stack:** Frontend: Vite + React.js + Tailwind CSS | Backend: Node.js + Express.js + MongoDB
 
@@ -6,7 +6,7 @@
 
 ## Overview
 
-**Apna Electro** is a service marketplace platform (starting with electricians, scalable to plumbers, painters, and more) inspired by Urban Company. The platform has three panels:
+**Apna Catalyst** is a service marketplace platform (starting with electricians, scalable to plumbers, painters, and more) inspired by Urban Company. The platform has three panels:
 
 - **User Panel** — book electricians, track orders, make payments
 - **Electrician Panel** — manage profile, availability, and bookings
@@ -19,7 +19,7 @@
 > **Tech:** Vite + React.js + Tailwind CSS | Use mock/static data for now
 
 ### Navbar
-- Logo (Apna Electro)
+- Logo (Apna Catalyst)
 - Links: Home | Services | Electricians | Join as Electrician | Login
 - Right side: Search button + **Book Now** CTA button (prominent, colored)
 
@@ -421,4 +421,4 @@
 
 ---
 
-*Built for Apna Electro — Powered by expertise, trust, and technology.*
+*Built for Apna Catalyst — Powered by expertise, trust, and technology.*
