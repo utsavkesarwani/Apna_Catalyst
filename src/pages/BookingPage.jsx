@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Zap, Calendar, Clock, FileText, ChevronRight, ChevronLeft, CheckCircle, AlertCircle, User, Loader2, Search, Mic, MicOff } from 'lucide-react'
+import { Zap, Calendar, Clock, FileText, ChevronRight, ChevronLeft, CheckCircle, AlertCircle, User, Loader2, Search, Mic, MicOff, CreditCard } from 'lucide-react'
 import { io as socketIOClient } from 'socket.io-client'
 import { services as mockServices } from '../data/services'
 import { getElectricianById as mockGetById, getAvailableElectricians as mockGetAvailable } from '../data/electricians'
-import { getServices, getElectricians as fetchElectricians, getElectricianById as fetchElectricianById, getBookedSlots } from '../api/user.api'
+import { getServices, getElectricians as fetchElectricians, getElectricianById as fetchElectricianById, getBookedSlots, getSubcategoriesByService, createBooking } from '../api/user.api'
 import { useAuth } from '../context/AuthContext'
+import { useCart } from '../context/CartContext'
 import Button from '../components/ui/Button'
 import StarRating from '../components/ui/StarRating'
 
@@ -15,13 +16,14 @@ const timeSlots = [
   '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM'
 ]
 
-const DEFAULT_STEPS = ['Select Service', 'Describe Issue', 'Choose Electrician', 'Date & Time', 'Review']
+const DEFAULT_STEPS = ['Select Service', 'Select Subcategory', 'Describe Issue', 'Choose Electrician', 'Date & Time', 'Review', 'Payment']
 
 export default function BookingPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const location = useLocation()
   const { isAuthenticated, user } = useAuth()
+  const { cart, clearCart } = useCart()
 
   const [step, setStep] = useState(0)
   const steps = id 
@@ -39,6 +41,7 @@ export default function BookingPage() {
   const [speechLang, setSpeechLang] = useState('hi-IN') // default Hindi
   const [bookedSlots, setBookedSlots] = useState([])
   const [loadingSlots, setLoadingSlots] = useState(false)
+  const [paymentLoading, setPaymentLoading] = useState(false)
   const socketRef = useRef(null)
 
   // Check for Speech Recognition support
@@ -122,11 +125,45 @@ export default function BookingPage() {
 
   const [booking, setBooking] = useState({
     service: '',
+    subcategories: [],
     description: '',
     date: '',
     time: '',
     electricianId: null,
   })
+
+  const [subcategories, setSubcategories] = useState([])
+  const [loadingSubcategories, setLoadingSubcategories] = useState(false)
+
+  const selectedService = services.find(s => s.slug === booking.service)
+
+  const toggleSubcategory = (sub) => {
+    setBooking(prev => {
+      const exists = prev.subcategories.some(item => item._id === sub._id || item.id === sub.id)
+      if (exists) {
+        return {
+          ...prev,
+          subcategories: prev.subcategories.filter(item => item._id !== sub._id && item.id !== sub.id),
+        }
+      } else {
+        return {
+          ...prev,
+          subcategories: [...prev.subcategories, sub],
+        }
+      }
+    })
+  }
+
+  const handleServiceSelect = (serviceSlug) => {
+    setBooking(prev => {
+      if (prev.service === serviceSlug) return prev
+      return {
+        ...prev,
+        service: serviceSlug,
+        subcategories: [], // Reset selected subcategories on service change
+      }
+    })
+  }
 
   // Load services from API
   useEffect(() => {
@@ -155,10 +192,58 @@ export default function BookingPage() {
     const serviceSlug = params.get('service')
     if (serviceSlug) {
       setBooking(prev => ({ ...prev, service: serviceSlug }))
-      // If service is provided, we can move to step 1 (Describe Issue)
+      // If service is provided, we can move to step 1 (Select Subcategory)
       setStep(1)
     }
   }, [location.search])
+
+  // Handle incoming cart items
+  useEffect(() => {
+    if (location.state?.fromCart && cart.length > 0 && services.length > 0) {
+      const parentName = cart[0].parentServiceName
+      const matchedService = services.find(s => s.name === parentName)
+      
+      setBooking(prev => ({
+        ...prev,
+        service: matchedService ? matchedService.slug : prev.service,
+        subcategories: cart.map(item => ({ ...item.subcategory, quantity: item.quantity })),
+      }))
+      
+      // Clear location state to prevent re-trigger on refresh
+      navigate(location.pathname, { replace: true, state: {} })
+      
+      // Proceed to Step 2 (Describe Issue)
+      setStep(2)
+    }
+  }, [location.state?.fromCart, cart, services, navigate, location.pathname])
+
+  // Fetch subcategories when the selected service changes
+  useEffect(() => {
+    if (!selectedService) {
+      setSubcategories([])
+      return
+    }
+
+    const loadSubcategories = async () => {
+      setLoadingSubcategories(true)
+      try {
+        const serviceId = selectedService._id || selectedService.id
+        const res = await getSubcategoriesByService(serviceId)
+        if (res.subcategories) {
+          setSubcategories(res.subcategories)
+        } else {
+          setSubcategories([])
+        }
+      } catch (err) {
+        console.error('Error fetching subcategories:', err)
+        setSubcategories(selectedService.subcategories || [])
+      } finally {
+        setLoadingSubcategories(false)
+      }
+    }
+
+    loadSubcategories()
+  }, [booking.service, services, selectedService])
 
   // Handle rebook flow from rejected booking
   useEffect(() => {
@@ -346,38 +431,29 @@ export default function BookingPage() {
     }
   }, [booking.electricianId, id])
 
-  const selectedService = services.find(s => s.slug === booking.service)
-
   const canProceed = () => {
     const currentStepName = steps[step]
     switch (currentStepName) {
       case 'Select Service': return !!booking.service
+      case 'Select Subcategory': return booking.subcategories && booking.subcategories.length > 0
       case 'Describe Issue': return booking.description.length >= 10
       case 'Choose Electrician': return !!booking.electricianId
       case 'Date & Time': return booking.date && booking.time
       case 'Review': return true
+      case 'Payment': return true
       default: return false
     }
   }
 
   const nextStep = () => {
     if (step < steps.length - 1) {
-      // If an electrician is pre-selected and we are at 'Date & Time', skip 'Choose Electrician'
-      // In the filtered 'steps' array, 'Review' is now at index 3 if 'id' exists
-      setStep(step + 1)
-    } else {
-      // Require auth before checkout
-      if (!isAuthenticated) {
-        navigate('/auth', { state: { from: '/checkout' } })
+      // Require auth before proceeding to Payment
+      const currentStepName = steps[step]
+      if (currentStepName === 'Review' && !isAuthenticated) {
+        navigate('/auth', { state: { from: '/booking' } })
         return
       }
-      navigate('/checkout', {
-        state: {
-          booking,
-          electrician: selectedElectrician,
-          service: selectedService,
-        },
-      })
+      setStep(step + 1)
     }
   }
 
@@ -400,8 +476,9 @@ export default function BookingPage() {
   }
 
   const renderStep = () => {
-    switch (step) {
-      case 0:
+    const currentStepName = steps[step]
+    switch (currentStepName) {
+      case 'Select Service':
         return (
           <motion.div key="step0" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
             <h2 className="text-xl font-display font-semibold text-white mb-2">Select a Service</h2>
@@ -410,7 +487,7 @@ export default function BookingPage() {
               {services.map(service => (
                 <button
                   key={service.slug}
-                  onClick={() => setBooking(prev => ({ ...prev, service: service.slug }))}
+                  onClick={() => handleServiceSelect(service.slug)}
                   className={`p-4 rounded-xl text-left border transition-all duration-300 ${
                     booking.service === service.slug
                       ? 'bg-primary-500/10 border-primary-500/40 shadow-glow-sm'
@@ -425,7 +502,71 @@ export default function BookingPage() {
           </motion.div>
         )
 
-      case 1:
+      case 'Select Subcategory':
+        return (
+          <motion.div key="stepSub" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+            <h2 className="text-xl font-display font-semibold text-white mb-2">Select Subcategories</h2>
+            <p className="text-sm text-surface-400 mb-6">
+              Choose the specific services you need for <span className="text-primary-400 font-semibold">{selectedService?.name}</span>
+            </p>
+
+            {loadingSubcategories ? (
+              <div className="py-12 text-center">
+                <Loader2 size={32} className="mx-auto mb-4 text-primary-400 animate-spin" />
+                <p className="text-surface-400">Loading subcategories...</p>
+              </div>
+            ) : subcategories.length === 0 ? (
+              <div className="py-12 text-center bg-surface-800/20 border border-surface-700/30 rounded-xl">
+                <p className="text-surface-500">No subcategories found for this service.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {subcategories.map(sub => {
+                  const isSelected = booking.subcategories.some(item => item._id === sub._id || item.id === sub.id)
+                  return (
+                    <button
+                      key={sub._id || sub.id}
+                      type="button"
+                      onClick={() => toggleSubcategory(sub)}
+                      className={`p-4 rounded-xl text-left border transition-all duration-300 flex gap-4 items-start ${
+                        isSelected
+                          ? 'bg-primary-500/10 border-primary-500/40 shadow-glow-sm scale-[1.01]'
+                          : 'bg-surface-800/30 border-surface-700/30 hover:border-surface-600'
+                      }`}
+                    >
+                      {sub.imageUrl && (
+                        <img 
+                          src={sub.imageUrl} 
+                          alt={sub.name} 
+                          className="w-16 h-16 object-cover rounded-lg shrink-0 border border-surface-700/50"
+                        />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-white text-sm flex items-center justify-between gap-2">
+                          <span className="truncate">{sub.name}</span>
+                          <span className="text-primary-400 font-bold shrink-0">₹{sub.price}</span>
+                        </div>
+                        {sub.shortDescription && (
+                          <p className="text-xs text-surface-400 mt-1 line-clamp-2 leading-relaxed">
+                            {sub.shortDescription}
+                          </p>
+                        )}
+                        {sub.duration && (
+                          <div className="flex items-center gap-1 mt-2 text-[10px] text-surface-500">
+                            <Clock size={10} />
+                            <span>{sub.duration}</span>
+                          </div>
+                        )}
+                      </div>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
+          </motion.div>
+        )
+
+      case 'Describe Issue':
         return (
           <motion.div key="step1" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
             <h2 className="text-xl font-display font-semibold text-white mb-1">Describe the Issue</h2>
@@ -516,14 +657,14 @@ export default function BookingPage() {
           </motion.div>
         )
 
-      case 2:
-        // If 'id' is present, we skip 'Choose Electrician' and the current step 2 should be 'Date & Time'
-        return id ? renderDateTime() : renderChooseElectrician()
-      case 3:
-        // If 'id' is present, step 3 is 'Review'. If not, it's 'Date & Time'.
-        return id ? renderReview() : renderDateTime()
-      case 4:
+      case 'Choose Electrician':
+        return renderChooseElectrician()
+      case 'Date & Time':
+        return renderDateTime()
+      case 'Review':
         return renderReview()
+      case 'Payment':
+        return renderPayment()
       default:
         return null
     }
@@ -732,9 +873,28 @@ export default function BookingPage() {
       <p className="text-sm text-surface-400 mb-6">Confirm everything looks good</p>
       <div className="space-y-4">
         <div className="p-4 rounded-xl bg-surface-800/30 border border-surface-700/30">
-          <span className="text-xs text-surface-500">Service</span>
+          <span className="text-xs text-surface-500">Service Category</span>
           <p className="font-medium text-white">{selectedService?.name || booking.service}</p>
         </div>
+        {booking.subcategories && booking.subcategories.length > 0 && (
+          <div className="p-4 rounded-xl bg-surface-800/30 border border-surface-700/30">
+            <span className="text-xs text-surface-500">Subcategories</span>
+            <div className="mt-1 space-y-1.5">
+              {booking.subcategories.map(sub => (
+                <div key={sub._id || sub.id} className="flex justify-between text-sm">
+                  <span className="text-surface-300">{sub.name}</span>
+                  <span className="text-white font-semibold">₹{sub.price}</span>
+                </div>
+              ))}
+              <div className="border-t border-surface-700/50 pt-1.5 mt-1.5 flex justify-between text-sm font-bold">
+                <span className="text-white">Total Service Charge</span>
+                <span className="text-primary-400">
+                  ₹{booking.subcategories.reduce((acc, sub) => acc + (sub.price || 0), 0)}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="p-4 rounded-xl bg-surface-800/30 border border-surface-700/30">
           <span className="text-xs text-surface-500">Problem Description</span>
           <p className="text-sm text-surface-300 mt-1">{booking.description}</p>
@@ -772,6 +932,139 @@ export default function BookingPage() {
             <span className="text-xs text-accent-400">You'll need to sign in to complete your booking</span>
           </div>
         )}
+      </div>
+    </motion.div>
+  )
+
+  // ─── Payment Logic ───────────────────────────────
+  const totalServicePrice = booking.subcategories.reduce((acc, sub) => acc + (sub.price || 0) * (sub.quantity || 1), 0)
+
+  const convertTimeTo24h = (time12h) => {
+    if (!time12h) return '10:00'
+    const [time, modifier] = time12h.split(' ')
+    let [hours, minutes] = time.split(':')
+    if (hours === '12') hours = '00'
+    if (modifier === 'PM') hours = parseInt(hours, 10) + 12
+    return `${String(hours).padStart(2, '0')}:${minutes}`
+  }
+
+  const initializePayment = async () => {
+    setPaymentLoading(true)
+
+    const bookingPayload = {
+      electricianId: booking.electricianId,
+      service: selectedService?.name || booking.service,
+      cartItems: booking.subcategories.map(sub => ({
+        subcategory: sub._id || sub.id,
+        name: sub.name,
+        quantity: sub.quantity || 1,
+        price: sub.price,
+      })),
+      problemDescription: booking.description,
+      scheduledAt: booking.date && booking.time
+        ? new Date(`${booking.date}T${convertTimeTo24h(booking.time)}`).toISOString()
+        : new Date().toISOString(),
+      timeSlot: booking.time || '10:00 AM',
+      paymentMethod: 'card',
+      paymentStatus: 'completed',
+    }
+
+    const options = {
+      key: 'rzp_test_XXXXXXXXXXXXXXX',
+      amount: totalServicePrice * 100,
+      currency: 'INR',
+      name: 'Apna Catalyst',
+      description: `Booking – ${booking.subcategories.map(s => s.name).join(', ')}`,
+      handler: async function (response) {
+        try {
+          const bookingRes = await createBooking(bookingPayload)
+          const createdBooking = bookingRes.booking
+          alert(`Payment Successful!\nTransaction ID: ${response.razorpay_payment_id || 'MOCK_TXN_' + Date.now()}`)
+          clearCart() // Clear the global cart after successful payment
+          navigate(`/track/${createdBooking._id}`, {
+            state: { booking: createdBooking, freshBooking: true },
+          })
+        } catch (err) {
+          console.error('Error creating booking:', err)
+          navigate('/track/BK-DEMO', {
+            state: { booking: bookingPayload, freshBooking: true },
+          })
+        } finally {
+          setPaymentLoading(false)
+        }
+      },
+      prefill: {},
+    }
+
+    if (typeof window.Razorpay !== 'undefined') {
+      const rzp = new window.Razorpay(options)
+      rzp.open()
+      setPaymentLoading(false)
+    } else {
+      // Fallback mock for development
+      setTimeout(async () => {
+        try {
+          const bookingRes = await createBooking(bookingPayload)
+          const createdBooking = bookingRes.booking
+          alert(`[Mock] Payment Gateway\nAmount: ₹${totalServicePrice.toLocaleString()}\nStatus: Success\nTxn: MOCK_TXN_${Date.now()}`)
+          clearCart() // Clear the global cart after mock payment
+          navigate(`/track/${createdBooking._id}`, {
+            state: { booking: createdBooking, freshBooking: true },
+          })
+        } catch (err) {
+          console.error('Error creating booking:', err)
+          alert(`[Mock] Payment Gateway\nAmount: ₹${totalServicePrice.toLocaleString()}\nStatus: Success`)
+          navigate('/track/BK-DEMO', {
+            state: { booking: bookingPayload, freshBooking: true },
+          })
+        } finally {
+          setPaymentLoading(false)
+        }
+      }, 1500)
+    }
+  }
+
+  const renderPayment = () => (
+    <motion.div key="stepPayment" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+      <div className="text-center py-4">
+        <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary-500/15 to-electric-500/10 flex items-center justify-center mx-auto mb-6">
+          <CreditCard size={36} className="text-primary-400" />
+        </div>
+        <h2 className="text-2xl font-display font-bold text-white mb-2">Confirm & Pay</h2>
+        <p className="text-surface-400 max-w-md mx-auto mb-8">
+          You are about to pay <strong className="text-white">₹{totalServicePrice.toLocaleString()}</strong> to confirm your booking.
+        </p>
+
+        {/* Order Summary */}
+        <div className="max-w-sm mx-auto text-left mb-8">
+          <div className="space-y-2 p-4 rounded-xl bg-surface-900/50 border border-surface-800/50">
+            {booking.subcategories.map((sub) => (
+              <div key={sub._id || sub.id} className="flex justify-between text-sm">
+                <span className="text-surface-400 truncate pr-4">
+                  {sub.name} {sub.quantity > 1 ? `× ${sub.quantity}` : ''}
+                </span>
+                <span className="text-white font-medium shrink-0">₹{(sub.price * (sub.quantity || 1))?.toLocaleString()}</span>
+              </div>
+            ))}
+            <div className="border-t border-surface-800 pt-2 mt-2 flex justify-between">
+              <span className="font-semibold text-white text-sm">Total</span>
+              <span className="font-bold text-primary-400">₹{totalServicePrice.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+
+        <button
+          onClick={initializePayment}
+          disabled={paymentLoading}
+          className="inline-flex items-center gap-2.5 px-10 py-3.5 bg-gradient-to-r from-primary-500 to-electric-500 text-white font-bold text-base rounded-2xl hover:shadow-glow-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 disabled:opacity-50"
+        >
+          {paymentLoading ? (
+            <><Loader2 size={20} className="animate-spin" /> Processing...</>
+          ) : (
+            <><CreditCard size={20} /> Pay ₹{totalServicePrice.toLocaleString()}</>
+          )}
+        </button>
+        <p className="text-[11px] text-surface-600 mt-3">Secured by Razorpay • 256-bit SSL encryption</p>
       </div>
     </motion.div>
   )
@@ -825,16 +1118,18 @@ export default function BookingPage() {
             >
               Back
             </Button>
-            <Button
-              variant="primary"
-              size="md"
-              icon={step === steps.length - 1 ? Zap : ChevronRight}
-              iconPosition="right"
-              onClick={nextStep}
-              disabled={!canProceed()}
-            >
-              {step === steps.length - 1 ? 'Proceed to Checkout' : 'Continue'}
-            </Button>
+            {steps[step] !== 'Payment' && (
+              <Button
+                variant="primary"
+                size="md"
+                icon={steps[step] === 'Review' ? Zap : ChevronRight}
+                iconPosition="right"
+                onClick={nextStep}
+                disabled={!canProceed()}
+              >
+                {steps[step] === 'Review' ? 'Proceed to Payment' : 'Continue'}
+              </Button>
+            )}
           </div>
         </div>
       </div>

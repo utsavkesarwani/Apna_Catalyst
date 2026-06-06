@@ -68,6 +68,19 @@ const electricianSchema = new mongoose.Schema({
     type: String, // Cloudinary URL
     default: '',
   },
+  profilePictureUrl: {
+    type: String, // Dedicated public-facing profile picture
+    default: '',
+  },
+  publicBio: {
+    type: String,
+    maxlength: [500, 'Public bio cannot exceed 500 characters'],
+    default: '',
+  },
+  isPubliclyVisible: {
+    type: Boolean,
+    default: false,
+  },
   workImages: [{
     type: String, // Cloudinary URLs
   }],

@@ -46,6 +46,7 @@ export default function ElectricianProfile() {
 
   const imageInputRef = useRef(null)
   const videoInputRef = useRef(null)
+  const profilePhotoInputRef = useRef(null)
 
   const handleChange = (field, value) => {
     setProfile(prev => ({ ...prev, [field]: value }))
@@ -54,6 +55,44 @@ export default function ElectricianProfile() {
   const handleLocationChange = (field, value) => {
     setProfile(prev => ({ ...prev, location: { ...prev.location, [field]: value } }))
   }
+
+  // ─── Profile Photo Upload ─────────────────────
+  const handleProfilePhotoUpload = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    setError(null)
+
+    const isDemo = localStorage.getItem('apna_catalyst_token') === 'demo_token_electrician_preview'
+
+    if (isDemo) {
+      setTimeout(() => {
+        const url = URL.createObjectURL(file)
+        setProfile(prev => ({ ...prev, profilePhoto: url }))
+        updateUser({ profilePhoto: url })
+        setSuccess('Profile picture updated! (Demo Mode)')
+        setUploading(false)
+        setTimeout(() => setSuccess(null), 3000)
+      }, 800)
+      return
+    }
+
+    try {
+      const formData = new FormData()
+      formData.append('profilePhoto', file)
+      const result = await uploadMedia(formData)
+      const newUrl = result.electrician?.profilePhoto || profile.profilePhoto
+      setProfile(prev => ({ ...prev, profilePhoto: newUrl }))
+      updateUser({ profilePhoto: newUrl })
+      setSuccess('Profile picture updated!')
+      setTimeout(() => setSuccess(null), 3000)
+    } catch (err) {
+      setError(err.message || 'Profile photo upload failed')
+    } finally {
+      setUploading(false)
+    }
+  }
+
 
   const addCategory = () => {
     if (newCategory.trim() && !profile.categories.includes(newCategory.trim())) {
@@ -235,10 +274,24 @@ export default function ElectricianProfile() {
                 )}
               </div>
               {editing && (
-                <button className="absolute inset-0 rounded-2xl bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Camera size={24} className="text-white" />
+                <button
+                  onClick={() => profilePhotoInputRef.current?.click()}
+                  className="absolute inset-0 rounded-2xl bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                >
+                  {uploading ? (
+                    <Loader2 size={24} className="text-white animate-spin" />
+                  ) : (
+                    <Camera size={24} className="text-white" />
+                  )}
                 </button>
               )}
+              <input
+                ref={profilePhotoInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="hidden"
+                onChange={handleProfilePhotoUpload}
+              />
             </div>
             <h2 className="text-xl font-display font-bold text-white mt-4">{profile.name}</h2>
             <p className="text-sm text-surface-500">{profile.location.city}, {profile.location.state}</p>

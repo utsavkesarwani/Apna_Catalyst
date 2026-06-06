@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useLocation, Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { CheckCircle, Clock, User, MapPin, Wrench, Star, Phone, MessageSquare, ArrowLeft, Zap, Loader2, AlertCircle, XCircle, Briefcase, RefreshCw } from 'lucide-react'
-import { getBookingById, createReview, getBookingAlternatives } from '../api/user.api'
+import { CheckCircle, Clock, User, MapPin, Wrench, Star, Phone, MessageSquare, ArrowLeft, Zap, Loader2, AlertCircle, XCircle, Briefcase, RefreshCw, Calendar } from 'lucide-react'
+import { getBookingById, createReview, getBookingAlternatives, getLatestBooking } from '../api/user.api'
 import { useAuth } from '../context/AuthContext'
 import Button from '../components/ui/Button'
 import StarRating from '../components/ui/StarRating'
@@ -65,7 +65,13 @@ export default function BookingTrackerPage() {
     }
 
     try {
-      const res = await getBookingById(id)
+      let res
+      if (id === 'latest') {
+        res = await getLatestBooking()
+      } else {
+        res = await getBookingById(id)
+      }
+      
       setBooking(res.booking)
 
       // If booking was rejected, auto-fetch alternatives
@@ -87,6 +93,8 @@ export default function BookingTrackerPage() {
           payment: passedBooking?.payment || { total: 448, method: 'upi', status: 'pending' },
           electrician: passedBooking?.electrician || null,
         })
+      } else if (err.status === 404 && id === 'latest') {
+        setError('NO_BOOKING')
       } else {
         setError('Could not load booking details')
       }
@@ -120,7 +128,7 @@ export default function BookingTrackerPage() {
 
     const interval = setInterval(async () => {
       try {
-        const res = await getBookingById(id)
+        const res = id === 'latest' ? await getLatestBooking() : await getBookingById(id)
         setBooking(res.booking)
 
         // If status just changed to rejected, fetch alternatives
@@ -199,6 +207,27 @@ export default function BookingTrackerPage() {
   }
 
   if (error && !booking) {
+    if (error === 'NO_BOOKING') {
+      return (
+        <section className="py-16">
+          <div className="section-container max-w-3xl text-center">
+            <div className="w-20 h-20 rounded-2xl bg-surface-800/50 flex items-center justify-center mx-auto mb-6">
+              <Calendar size={32} className="text-surface-400" />
+            </div>
+            <h2 className="text-xl font-display font-bold text-white mb-2">No Upcoming Bookings</h2>
+            <p className="text-surface-400 text-sm mb-6 max-w-sm mx-auto">
+              You don't have any active bookings right now. Whenever you book a service, you can track it here!
+            </p>
+            <Link to="/">
+              <Button variant="primary" size="md" icon={Zap}>
+                Book a Service
+              </Button>
+            </Link>
+          </div>
+        </section>
+      )
+    }
+
     return (
       <section className="py-16">
         <div className="section-container max-w-3xl text-center">

@@ -32,6 +32,16 @@ const subcategorySchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  imageUrl: {
+    type: String,
+    default: '',
+  },
+  shortDescription: {
+    type: String,
+    trim: true,
+    maxlength: [120, 'Short description cannot exceed 120 characters'],
+    default: '',
+  },
 }, {
   timestamps: true,
   toJSON: { virtuals: true },

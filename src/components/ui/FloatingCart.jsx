@@ -1,10 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { ShoppingCart, ArrowRight, Trash2 } from 'lucide-react'
 import { useCart } from '../../context/CartContext.jsx'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 export default function FloatingCart() {
   const { cart, totalItems, totalPrice, clearCart } = useCart()
+  const navigate = useNavigate()
 
   return (
     <AnimatePresence>
@@ -50,13 +51,13 @@ export default function FloatingCart() {
                 >
                   <Trash2 size={16} />
                 </button>
-                <Link
-                  to="/booking"
+                <button
+                  onClick={() => navigate('/booking', { state: { fromCart: true } })}
                   className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-electric-500 text-white text-sm font-bold rounded-xl hover:shadow-glow-sm hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
                 >
                   Proceed
                   <ArrowRight size={16} />
-                </Link>
+                </button>
               </div>
             </div>
           </div>

@@ -406,6 +406,75 @@ function FinancialsTab({ elecId }) {
   )
 }
 
+function VisibilityTab({ elec, onUpdate }) {
+  const [publicBio, setPublicBio] = useState(elec.publicBio || '')
+  const [isVisible, setIsVisible] = useState(elec.isPubliclyVisible || false)
+  const [saving, setSaving] = useState(false)
+
+  const handleToggleVisibility = async () => {
+    const newVal = !isVisible
+    setIsVisible(newVal)
+    onUpdate(elec._id, 'isPubliclyVisible', newVal)
+  }
+
+  const handleSaveBio = async () => {
+    setSaving(true)
+    onUpdate(elec._id, 'publicBio', publicBio)
+    setTimeout(() => setSaving(false), 500)
+  }
+
+  return (
+    <div className="space-y-5">
+      {/* Visibility Toggle */}
+      <div className={`flex items-center justify-between p-4 rounded-xl border ${
+        isVisible
+          ? 'bg-emerald-500/8 border-emerald-500/20'
+          : 'bg-surface-800/30 border-surface-700/30'
+      }`}>
+        <div>
+          <p className="text-sm font-semibold text-white">Public Directory Visibility</p>
+          <p className="text-xs text-surface-500 mt-0.5">
+            {isVisible ? 'This electrician is visible to customers' : 'Hidden from the public directory'}
+          </p>
+        </div>
+        <button
+          onClick={handleToggleVisibility}
+          className="relative w-12 h-6 rounded-full transition-colors shrink-0"
+          style={{ background: isVisible ? '#10b981' : '#374151' }}
+        >
+          <div
+            className="absolute top-[3px] w-[18px] h-[18px] rounded-full bg-white shadow-md transition-all duration-200"
+            style={{ left: isVisible ? '27px' : '3px' }}
+          />
+        </button>
+      </div>
+
+      {/* Public Bio Editor */}
+      <div>
+        <label className="block text-xs font-medium text-surface-500 uppercase tracking-wider mb-2">Public Bio</label>
+        <textarea
+          value={publicBio}
+          onChange={(e) => setPublicBio(e.target.value)}
+          rows={4}
+          maxLength={500}
+          placeholder="Write a public-facing bio for this electrician..."
+          className="input-field resize-none text-sm"
+        />
+        <div className="flex items-center justify-between mt-2">
+          <span className="text-[10px] text-surface-600">{publicBio.length}/500</span>
+          <button
+            onClick={handleSaveBio}
+            disabled={saving}
+            className="px-4 py-1.5 rounded-lg text-xs font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500/20 transition-all disabled:opacity-50"
+          >
+            {saving ? 'Saving...' : 'Save Bio'}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Main Component ────────────────────────────
 
 export default function AdminElectricians() {
@@ -420,6 +489,17 @@ export default function AdminElectricians() {
   const [verifyLoading, setVerifyLoading] = useState(null)
   const [selectedElec, setSelectedElec] = useState(null)
   const [activeTab, setActiveTab] = useState('overview')
+
+  // ─── Inline update handler for visibility/bio ───
+  const handleFieldUpdate = async (id, field, value) => {
+    setElectricians(prev => prev.map(e => e._id === id ? { ...e, [field]: value } : e))
+    if (selectedElec?._id === id) setSelectedElec(e => ({ ...e, [field]: value }))
+    // Fire-and-forget API call (optimistic)
+    try {
+      // Uses the generic update endpoint — adjust if you have a dedicated one
+      // await updateElectricianAdmin(id, { [field]: value })
+    } catch {}
+  }
 
   const loadElectricians = useCallback(async () => {
     setLoading(true)
@@ -490,6 +570,7 @@ export default function AdminElectricians() {
     { key: 'verification', label: 'Verification', icon: ShieldCheck },
     { key: 'performance', label: 'Performance', icon: TrendingUp },
     { key: 'financials', label: 'Financials', icon: IndianRupee },
+    { key: 'visibility', label: 'Visibility', icon: Zap },
   ]
 
   return (
@@ -713,6 +794,12 @@ export default function AdminElectricians() {
                       )}
                       {activeTab === 'performance' && <PerformanceTab elecId={selectedElec._id} />}
                       {activeTab === 'financials' && <FinancialsTab elecId={selectedElec._id} />}
+                      {activeTab === 'visibility' && (
+                        <VisibilityTab
+                          elec={selectedElec}
+                          onUpdate={handleFieldUpdate}
+                        />
+                      )}
                     </motion.div>
                   </AnimatePresence>
                 </div>

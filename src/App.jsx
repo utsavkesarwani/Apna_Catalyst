@@ -7,7 +7,7 @@ import ElectriciansPage from './pages/ElectriciansPage'
 import ElectricianProfilePage from './pages/ElectricianProfilePage'
 import HomeWiringPage from './pages/HomeWiringPage'
 import BookingPage from './pages/BookingPage'
-import CheckoutPage from './pages/CheckoutPage'
+
 import BookingTrackerPage from './pages/BookingTrackerPage'
 import JoinElectricianPage from './pages/JoinElectricianPage'
 import AuthPage from './pages/AuthPage'
@@ -135,17 +135,7 @@ function App() {
           <Footer />
         </div>
       } />
-      <Route path="/checkout" element={
-        <div className="min-h-screen bg-surface-950 flex flex-col">
-          <Navbar />
-          <main className="flex-1">
-            <OnboardingRoute>
-              <CheckoutPage />
-            </OnboardingRoute>
-          </main>
-          <Footer />
-        </div>
-      } />
+
       <Route path="/track/:id" element={
         <div className="min-h-screen bg-surface-950 flex flex-col">
           <Navbar />

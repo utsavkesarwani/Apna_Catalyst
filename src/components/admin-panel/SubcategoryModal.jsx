@@ -12,7 +12,7 @@ import {
   deleteSubcategory as deleteSubcategoryAPI,
 } from '../../api/admin.api.js'
 
-const defaultSubcategory = { name: '', duration: '', price: 0 }
+const defaultSubcategory = { name: '', duration: '', price: 0, shortDescription: '', imageUrl: '' }
 
 export default function SubcategoryModal({ service, onClose }) {
   const [subcategories, setSubcategories] = useState([])
@@ -47,7 +47,7 @@ export default function SubcategoryModal({ service, onClose }) {
   }
 
   const openEdit = (sub) => {
-    setForm({ name: sub.name, duration: sub.duration, price: sub.price })
+    setForm({ name: sub.name, duration: sub.duration, price: sub.price, shortDescription: sub.shortDescription || '', imageUrl: sub.imageUrl || '' })
     setEditingId(sub._id)
     setShowForm(true)
   }
@@ -199,6 +199,26 @@ export default function SubcategoryModal({ service, onClose }) {
                         min="0"
                       />
                     </div>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-medium text-surface-500 mb-1 uppercase tracking-wider">Short Description (max 120)</label>
+                    <input
+                      type="text"
+                      value={form.shortDescription || ''}
+                      onChange={(e) => setForm(f => ({ ...f, shortDescription: e.target.value.slice(0, 120) }))}
+                      placeholder="Brief overview of this service..."
+                      className="input-field text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-medium text-surface-500 mb-1 uppercase tracking-wider">Image URL</label>
+                    <input
+                      type="text"
+                      value={form.imageUrl || ''}
+                      onChange={(e) => setForm(f => ({ ...f, imageUrl: e.target.value }))}
+                      placeholder="https://..."
+                      className="input-field text-sm"
+                    />
                   </div>
                   <div className="flex gap-2 pt-1">
                     <button

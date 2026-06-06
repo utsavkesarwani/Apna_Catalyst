@@ -82,6 +82,9 @@ export const createBooking = (data) =>
 export const getBookingById = (id) =>
   apiClient.get(`/bookings/${id}`)
 
+export const getLatestBooking = () =>
+  apiClient.get('/bookings/latest')
+
 export const getMyBookings = (params = {}) =>
   apiClient.get('/bookings/user/me', { params })
 

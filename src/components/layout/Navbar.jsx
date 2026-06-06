@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Menu, X, Zap, ChevronRight, User, LogOut, ClipboardList } from 'lucide-react'
+import { Search, Menu, X, Zap, ChevronRight, User, LogOut, ClipboardList, ShoppingCart, Calendar, Trash2 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
+import { useCart } from '../../context/CartContext'
 import { useSiteConfig } from '../../context/SiteConfigContext.jsx'
+import { getLatestBooking } from '../../api/user.api'
 import Button from '../ui/Button'
 
 const navLinks = [
@@ -22,7 +24,11 @@ export default function Navbar() {
   const location = useLocation()
   const navigate = useNavigate()
   const { isAuthenticated, user, logout } = useAuth()
+  const { cart, totalItems, totalPrice, clearCart, removeItem } = useCart()
   const { config } = useSiteConfig()
+
+  const [cartDrawerOpen, setCartDrawerOpen] = useState(false)
+  const [latestBooking, setLatestBooking] = useState(null)
 
   // Split site name for branding
   const siteName = config.site_name || 'Apna Catalyst'
@@ -38,7 +44,25 @@ export default function Navbar() {
     setMobileOpen(false)
     setSearchOpen(false)
     setUserMenuOpen(false)
+    setCartDrawerOpen(false)
   }, [location])
+
+  // Fetch latest booking if authenticated
+  useEffect(() => {
+    if (isAuthenticated && user?.role === 'user') {
+      getLatestBooking()
+        .then(res => {
+          if (res.booking && !['completed', 'cancelled', 'rejected'].includes(res.booking.status)) {
+            setLatestBooking(res.booking)
+          } else {
+            setLatestBooking(null)
+          }
+        })
+        .catch(() => setLatestBooking(null))
+    } else {
+      setLatestBooking(null)
+    }
+  }, [isAuthenticated, user?.role, location.pathname]) // Re-fetch on navigation
 
   // Close user menu on outside click
   useEffect(() => {
@@ -116,6 +140,42 @@ export default function Navbar() {
               >
                 <Search size={20} />
               </motion.button>
+
+              {/* Cart / Booking Indicator */}
+              {(totalItems > 0 || latestBooking) && (
+                <div className="relative">
+                  {latestBooking && totalItems === 0 ? (
+                    // Active Booking Glowing Indicator
+                    <Link to="/track/latest">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="relative p-2.5 rounded-xl text-primary-400 hover:text-white hover:bg-surface-800/50 transition-all duration-300"
+                        title="Active Booking"
+                      >
+                        <div className="absolute inset-0 rounded-xl bg-primary-500/20 animate-pulse" />
+                        <Calendar size={20} className="relative z-10" />
+                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-surface-950 z-20" />
+                      </motion.button>
+                    </Link>
+                  ) : (
+                    // Cart Indicator
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => setCartDrawerOpen(true)}
+                      className="p-2.5 rounded-xl text-surface-400 hover:text-white hover:bg-surface-800/50 transition-all duration-300 relative"
+                    >
+                      <ShoppingCart size={20} />
+                      {totalItems > 0 && (
+                        <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary-500 text-white text-[10px] font-bold flex items-center justify-center shadow-lg shadow-primary-500/20">
+                          {totalItems}
+                        </span>
+                      )}
+                    </motion.button>
+                  )}
+                </div>
+              )}
 
               {/* Book Now CTA */}
               <Link to="/booking" className="hidden sm:block">
@@ -321,6 +381,127 @@ export default function Navbar() {
                   )}
                 </div>
               </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Cart Side Drawer */}
+      <AnimatePresence>
+        {cartDrawerOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+              onClick={() => setCartDrawerOpen(false)}
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 bottom-0 w-full sm:w-96 bg-surface-900 border-l border-surface-800/50 z-50 flex flex-col shadow-2xl"
+            >
+              {/* Header */}
+              <div className="p-6 border-b border-surface-800/50 flex items-center justify-between bg-surface-900/50 backdrop-blur-md">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500/20 to-electric-500/10 flex items-center justify-center">
+                    <ShoppingCart size={20} className="text-primary-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-display font-bold text-white">Your Cart</h2>
+                    <p className="text-xs text-surface-400">{totalItems} item{totalItems !== 1 ? 's' : ''}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setCartDrawerOpen(false)}
+                  className="p-2 rounded-xl text-surface-400 hover:text-white hover:bg-surface-800/50 transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Cart Items */}
+              <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
+                {cart.length > 0 ? (
+                  <div className="space-y-4">
+                    {cart.map((item) => (
+                      <div key={item.subcategory._id} className="p-4 rounded-xl bg-surface-800/30 border border-surface-700/50 hover:border-surface-600/50 transition-colors group">
+                        <div className="flex justify-between items-start gap-4">
+                          <div className="flex-1">
+                            <h4 className="text-sm font-medium text-white mb-1">{item.subcategory.name}</h4>
+                            <p className="text-xs text-surface-400 line-clamp-1">{item.parentServiceName}</p>
+                          </div>
+                          <div className="text-right flex-shrink-0">
+                            <span className="text-sm font-bold text-primary-400 block mb-2">
+                              ₹{(item.subcategory.price * item.quantity).toLocaleString()}
+                            </span>
+                            <div className="flex items-center gap-2 justify-end">
+                              <span className="text-xs text-surface-400 bg-surface-800 px-2 py-1 rounded-md">
+                                Qty: {item.quantity}
+                              </span>
+                              <button
+                                onClick={() => removeItem(item.subcategory._id)}
+                                className="p-1.5 text-surface-500 hover:text-red-400 hover:bg-red-500/10 rounded-md transition-colors"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="h-full flex flex-col items-center justify-center text-center pb-10">
+                    <div className="w-20 h-20 rounded-full bg-surface-800/50 flex items-center justify-center mb-6">
+                      <ShoppingCart size={32} className="text-surface-600" />
+                    </div>
+                    <h3 className="text-lg font-display font-bold text-white mb-2">Cart is empty</h3>
+                    <p className="text-sm text-surface-400 max-w-[240px]">
+                      Looks like you haven't added any services yet.
+                    </p>
+                    <button
+                      onClick={() => {
+                        setCartDrawerOpen(false)
+                        navigate('/services')
+                      }}
+                      className="mt-6 px-6 py-2.5 rounded-xl border border-surface-700/50 text-surface-300 hover:text-white hover:bg-surface-800/50 transition-all text-sm font-medium"
+                    >
+                      Browse Services
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              {cart.length > 0 && (
+                <div className="p-6 border-t border-surface-800/50 bg-surface-900/95 backdrop-blur-md">
+                  <div className="flex items-center justify-between mb-6">
+                    <span className="text-surface-400 text-sm">Estimated Total</span>
+                    <span className="text-xl font-bold text-white">₹{totalPrice.toLocaleString()}</span>
+                  </div>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={clearCart}
+                      className="px-4 py-3 rounded-xl border border-surface-700/50 text-surface-400 hover:text-red-400 hover:border-red-500/30 hover:bg-red-500/10 transition-all"
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setCartDrawerOpen(false)
+                        navigate('/booking', { state: { fromCart: true } })
+                      }}
+                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-electric-500 text-white font-bold rounded-xl hover:shadow-glow-sm hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    >
+                      Resume Booking <ChevronRight size={18} />
+                    </button>
+                  </div>
+                </div>
+              )}
             </motion.div>
           </>
         )}

@@ -9,7 +9,7 @@ const bookingSchema = new mongoose.Schema({
   electrician: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Electrician',
-    required: [true, 'Electrician is required'],
+    default: null, // Nullable for auto-assign flow
   },
   service: {
     type: String,
@@ -19,6 +19,25 @@ const bookingSchema = new mongoose.Schema({
   serviceRef: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Service',
+  },
+  cartItems: [{
+    subcategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Subcategory' },
+    name: { type: String, required: true },
+    quantity: { type: Number, required: true, min: 1 },
+    price: { type: Number, required: true },
+  }],
+  bookingDateTime: {
+    type: Date,
+  },
+  electricianId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Electrician',
+    default: null,
+  },
+  paymentStatus: {
+    type: String,
+    enum: ['pending', 'completed', 'failed', 'refunded'],
+    default: 'pending',
   },
   problemDescription: {
     type: String,
